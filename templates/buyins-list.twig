@@ -1,0 +1,44 @@
+<div class="card-header bg-primary text-white">
+    Listado de Buyins
+</div>
+
+<div class="card-body">
+    <section class="container row">
+        <article class="col-md-11" style="width: auto; margin: auto auto;">
+            <table class="table table-bordered table-hover table-condensed">
+                <thead class="text-center bg-dark text-white">
+                    <tr>
+                        <th> Nombre </th>
+                        <th> Efectivo (usd) </th>
+                        <th> Crédito (usd) </th>
+                        <th> Hora de <br> compra </th>
+                        <th> Acciones </th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    {% if buyins is empty %}
+                    <tr>
+                        <td colspan="9"> sin registros </td>
+                    </tr>
+                    {% endif %}
+                    {% for buyin in buyins %}
+                    <tr>
+                        <td> {{ buyin._embedded.userSession._embedded.user.name }} {{ buyin._embedded.userSession._embedded.user.lastname }} </td>
+                        <td> {{ buyin.amountCash|number_format(0, ',', '.') }} </td>
+                        <td> {{ buyin.amountCredit|number_format(0, ',', '.') }} </td>
+                        <td> {{ buyin.hour.date|date('H:i') }} </td>
+                        <td> <a href="#" onclick="updateBuyin({{ idSession }}, {{ buyin.id }});"> <i class="fas fa-pencil-alt"> </i> </a>
+                             <a href="#" onclick="deleteBuyin({{ idSession }}, {{ buyin.id }});"> <i class="fas fa-trash-alt"></i> </a>
+                             </td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="9">
+                            <a href="#" class="btn btn-lg btn-block btn-danger {# {% if seatedPlayers|length == 0 %} button-disabled {% endif %} #}" onclick="addBuyin(this, {{ idSession }}, '{{ sessionDate }}'); return false;"> <i class="fas fa-plus"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </article>
+    </section>
+</div>

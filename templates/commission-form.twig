@@ -1,0 +1,33 @@
+<div class="container">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                {{ title }}
+            </div>
+            <div class="card-body">
+                <section class="container row justify-content-center">
+                    <article>
+                        <form class="was-validated" id="commissions-form" onsubmit="commissionSubmit({{ idSession }}); return false;" action="{{ action }}" method="{{ method }}">
+                        
+                            <input id="id" name="id" type="hidden">
+                            <input class="form-control" name="idSession" id="idSession" type="hidden" required="true">
+                            <div class="form-group">
+                                <label for="hour"> hora: </label>
+                                <input class="form-control" name="hour" id="hour" type="datetime-local" required="true">
+                                <small id="hour" class="form-tet text-muted"> Fecha y hora </small>
+                            </div>
+                            <div class="form-group">
+                                <label for="commission"> commission: </label>
+                                <input class="form-control" name="commission" id="commission" type="number" placeholder="Commission" required="true">
+                            </div>
+                            <div class="form-group">
+                                <input class="btn btn-lg btn-block btn-primary" type="submit" value="{{ buttonName }}" />
+                            </div>
+                            <br><br><br><br>
+                        </form>
+                    </article>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>

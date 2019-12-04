@@ -1,0 +1,41 @@
+<div class="card-header bg-primary text-white">
+    Listado de Usuarios
+</div>
+
+<div class="card-body">
+    <section class="container row" style="width: auto; margin: auto auto;">
+        <article class="col-md-12">
+            <table class="table table-bordered table-hover text-center">
+                <thead class="text-center bg-dark text-white">
+                    <th> # </th>
+                    <th> Jugador </th>
+                    <th> Teléfono </th>
+                    <th> horas </th>
+                    <th> acciones </th>
+                <tbody>
+                    {% if users is empty %}
+                    <tr>
+                        <td colspan="9"> sin registros </td>
+                    </tr>
+                    {% endif %}
+                    {% set counter = (counter|default(0)) %}
+                    {% for user in users %}
+                    <tr>
+                        <th> 
+                            {% set counter = (counter|default(counter)) + 1 %}
+                            <p>{{ counter }}</p>
+                        </th>
+                        <td> {{ user.name }} {{ user.lastname }} </td>
+                        <td> {{ user.username }} </td>
+                        <td> {{ user.hours|number_format(2, ',', '.') }} </td>
+                        <td> <a href="#" onclick="updateUser({{ user.id }});"> <i class="fas fa-pencil-alt"> </i> </a>
+                             <a class="{% if user.cashin != 0 %} button-disabled {% endif %}" href="#" onclick="deleteUser({{ user.id }});"> <i class="fas fa-trash-alt"></i> </a> 
+                             </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="#" class="btn btn-lg btn-block btn-danger" onclick="addUser({{ idSession }});"> <i class="fas fa-plus"></i></a>
+        </article>
+    </section>
+</div>

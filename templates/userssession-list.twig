@@ -1,0 +1,92 @@
+<div class="card-header bg-primary text-white">
+    Listado de Usuarios Activos
+</div>
+
+<div class="card-body">
+    <section class="container row" style="width: auto; margin: auto auto;">
+        <article class="col-md-12">
+            <table class="table table-bordered table-hover table-condensed">
+                <thead class="text-center bg-dark text-white">
+                    <th> Jugador </th>
+                    <th> Hora <br>de inicio </th>
+                    <th> Efectivo </th>
+                    <th> Credito </th>
+                    <th> Total </th>
+                    <th> Acciones </th>
+                </thead>
+                <tbody class="text-center">
+                    {% for user in usersSession %}
+                    {% if user.end is empty %}
+                    <tr class="text-center">
+                        <td>
+                            {{ user._embedded.user.name }} {{ user._embedded.user.lastname }}
+                        </td>
+                        <td> {% if not user.start is null %}
+                                {{ user.start.date|date('H:i') }}
+                             {% endif %}
+                        </td>
+                        <td> {{ user.totalCash|number_format(2, ',', '.') }} </td>
+                        <td> {{ user.totalCredit|number_format(2, ',', '.') }} </td>
+                        <td> {{ user.cashin|number_format(2, ',', '.') }} </td>
+                        <td> <a class="{% if user.cashin == 0 %} button-disabled {% endif %}" href="#" onclick="closeUserSession(this, {{ idSession }}, {{ user.id }}); return false;">
+                             <i class="fas fa-sign-out-alt"></i> </a> 
+                             <a class="{% if user.cashin == 0 %} button-disabled {% endif %}" href="#" onclick="updateUserSession(this, {{ idSession }}, {{ user.id }}); return false;"> <i class="fas fa-pencil-alt"> </i> </a>
+                             <a href="#" onclick="deleteUserSession({{ idSession }}, {{ user.id }});"> <i class="fas fa-trash-alt"></i> </a>
+                             </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    <tr>
+                        <td colspan="9">
+                            <a href="#" class="btn btn-lg btn-block btn-danger" onclick="addUserSession({{ idSession }});"> <i class="fas fa-plus"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </article>
+    </section>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        Listado de Usuarios Inactivos
+    </div>
+    <div class="card-body">
+        <section class="container row" style="width: auto; margin: auto auto;">
+            <article class="col-md-12">
+                <table class="table table-bordered table-hover table-condensed">
+                    <thead class="text-center bg-dark text-white">
+                        <th> Inactivo </th>
+                        <th> Hora <br> de inicio </th>
+                        <th> Cashin </th>
+                        <th> Cashout </th>
+                        <th> Hora <br> de fin </th>
+                        <th> acciones </th>
+                    </thead>
+                    <tbody class="text-center">
+                        {# {% include 'withoutRecords.html.twig' %} #}
+                        {% for user in usersSession %}
+                        {% if user.end is not empty %}
+                        <tr class="text-center">
+                            <td>
+                                {{ user._embedded.user.name }} {{ user._embedded.user.lastname }}
+                            </td>
+                            <td> {{ user.start.date|date('H:i') }} </td>
+                            <td> {{ user.cashin|number_format(2, ',', '.') }} </td>
+                            <td> {{ user.cashout|number_format(2, ',', '.') }} </td>
+                            <td> {{ user.end.date|date('H:i') }}
+                            </td>
+                            <td>  
+                                 <a href="#" onclick="updateUserSession(this, {{ idSession }}, {{ user.id }});"> <i class="fas fa-pencil-alt"> </i> </a>
+                                 <a href="#" onclick="deleteUserSession({{ idSession }}, {{ user.id }});"> <i class="fas fa-trash-alt"></i> </a>
+                            </td>
+                        </tr>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </article>
+        </section>
+    </div>
+</div>
