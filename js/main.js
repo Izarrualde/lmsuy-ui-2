@@ -1,7 +1,8 @@
 const DEBUG = true;
 
+// https://www.api.lmsuy.com
 const CONFIG = {
-    base_url: 'http://www.lms-api.local',
+    base_url: 'http://www.lms-api-2.local',
     endpoints: {
         sessions: {
             fetch: {
@@ -802,17 +803,20 @@ function commissionSubmit(idSession) {
         function (response) {
             if (response.status !== 200 && response.status !== 201) {
                 errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
                 return;
             }
 
-            // Examine the text in the response
-            response.json().then(function (data) {
-                // CERRAR EL FORMULARIO
-                $('#forms').html('');
-                // ACTUALIZAR LA TABLA
-                fetchCommissions(idSession);
-                debug(data);
-            });
+            // CERRAR EL FORMULARIO
+            $('#forms').html('');
+            // ACTUALIZAR LA TABLA
+            fetchCommissions(idSession);
+            debug(data);
+
         },
         errorHandler,
         form
@@ -895,24 +899,29 @@ function buyinSubmit(idSession) {
         url,
         method,
         function (response) {
+            debug('status'); debug(response.status);
+            // Examine the text in the response
             if (response.status !== 200 && response.status !== 201) {
-                errorHandler(response);
+                // errorHandler(response);
+                response.json().then(function (data) {
+
+                    alert(data.detail);
+                });
+
                 return;
             }
 
-            // Examine the text in the response
-            response.json().then(function (data) {
                 // CERRAR EL FORMULARIO
                 $('#forms').html('');
+
                 // ACTUALIZAR LA TABLA
                 fetchBuyins(idSession);
 
                 // print ticket
                 debug(data);
                 printTicket(data);
-
                 debug(data);
-            });
+
         },
         function (err) {
             console.log(err)
@@ -1665,6 +1674,7 @@ function updateSession(idSession) {
                 action: parseRoute(CONFIG.endpoints.sessions.update.path, {
                     "idSession": idSession
                 }),
+                method: CONFIG.endpoints.sessions.update.method,
                 buttonName: 'Editar',
                 idSession: idSession
             });
