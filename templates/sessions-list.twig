@@ -45,7 +45,7 @@
 
                             <a href="#" onclick="fetchCommissions({{ session.id }}, {{ session.commissionTotal }}, '{{ session.startTimeReal.date }}');" class="btn btn-sm btn-success"> <i class="fas fa-dollar-sign"></i></a>
 
-                            <a href="#" onclick="fetchExpenses({{ session.id }});" class="btn btn-sm btn-white"> <i class="fas fa-clipboard"></i></a>
+                            <a href="#" onclick="fetchExpenses({{ session.id }}); return false" class="btn btn-sm btn-white"> <i class="fas fa-clipboard"></i></a>
 
                             <a href="#" onclick="updateSession({{ session.id }});"> <i class="fas fa-pencil-alt"> </i> </a>
 

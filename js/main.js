@@ -44,6 +44,12 @@ const CONFIG = {
                 path: '/rakeback-algorithms'
             }
         },
+        oauth: {
+            oauth: {
+                method: 'post',
+                path: '/oauth'
+            }
+        },
         users: {
             fetch: {
                 method: 'get',
@@ -247,8 +253,14 @@ function makeAPIRequest(url, method, successCallback, errorCallback, body) {
             "Accept": "application/json"
         }
     };
+    var token = window.localStorage.getItem('access_token');
+
     if (body !== undefined) {
         req.body = body;
+    }
+
+    if (token) {
+        req.headers.Authorization="Bearer " + token;
     }
     fetch(
         url,
@@ -288,6 +300,63 @@ function loadView(url, method, templatePath, renderer, errorHandler) {
             }).catch(errorHandler);
         },
         errorHandler
+    );
+}
+
+function checkLogin() {
+    debug('check');
+    debug(window.localStorage.getItem('access_token'));
+
+    if (window.localStorage.getItem('access_token') == null) {
+        $('#menuitem-sessions').addClass('disabled');
+        $('#menuitem-users').addClass('disabled');
+        $('#logout').addClass('disabled');
+
+        $('#login-div').removeClass('hide');
+    }
+}
+
+function logout() {
+    window.localStorage.removeItem('access_token');
+    window.location.reload();
+}
+
+function loginSubmit() {
+    var url = $('#login-form').attr("action");
+    var method = $('#login-form').attr("method");
+    var form = new FormData(document.getElementById('login-form'));
+
+    var errorHandler = function (err) {
+        console.log(err)
+    };
+
+    makeAPIRequest(
+        url,
+        method,
+        function (response) {
+            // Examine the text in the response
+            response.json().then(function (data) {
+                if (response.status !== 200 && response.status !== 201) {
+                    alert(data.detail);
+                    return;
+                }
+
+                alert(data.access_token);
+
+                // save token in localstorage
+                window.localStorage.setItem('access_token', data.access_token);
+
+                // CLOSE FORM
+                $('#login-div').html('');
+
+                // ENABLE BUTTONS
+                $('#menuitem-sessions').removeClass('disabled');
+                $('#menuitem-users').removeClass('disabled');
+                $('#logout').removeClass('disabled');
+            });
+        },
+        errorHandler,
+        form
     );
 }
 
@@ -394,7 +463,6 @@ function revisionSession(idSession) {
 }
 
 function fetchUsers() {
-    debug('en fetch users');
     $('.nav-link.active').removeClass('active');
     $('#menuitem-users').addClass('active');
     $('#forms').html('');
@@ -555,7 +623,8 @@ function fetchUsersSession(idSession) {
         method,
         'templates/userssession-list.twig',
         function (template, data) {
-            debug(data); debug('del usersession');
+            debug(data);
+            debug('del usersession');
             var output = template.render({
                 usersSession: data._embedded.users_session,
                 idSession: idSession
@@ -671,7 +740,8 @@ async function fetchServiceTips(template, dataDealerTips, sessionDate, idSession
         function (err) {
             console.log(err)
         },
-    )}
+    )
+}
 
 function fetchDealerTips(idSession, sessionDate) {
     $('#forms').html('');
@@ -700,6 +770,7 @@ function deleteDealerTip(idSession, idDealerTip) {
         "idSession": idSession
     });
     var method = CONFIG.endpoints.dealerTips.deleteDealerTip.method;
+
     makeAPIRequest(
         url,
         method,
@@ -722,6 +793,7 @@ function deleteServiceTip(idSession, idServiceTip) {
         "idSession": idSession
     });
     var method = CONFIG.endpoints.serviceTips.deleteServiceTip.method;
+
     makeAPIRequest(
         url,
         method,
@@ -793,6 +865,7 @@ function commissionSubmit(idSession) {
     var url = $('#commissions-form').attr("action");
     var method = $('#commissions-form').attr("method");
     var form = new FormData(document.getElementById('commissions-form'));
+
     var errorHandler = function (err) {
         console.log(err)
     };
@@ -811,9 +884,9 @@ function commissionSubmit(idSession) {
                 return;
             }
 
-            // CERRAR EL FORMULARIO
+            // CLOSE FORM
             $('#forms').html('');
-            // ACTUALIZAR LA TABLA
+            // UPDATE TABLE
             fetchCommissions(idSession);
             debug(data);
 
@@ -834,7 +907,7 @@ function addCommission(idSession, sessionDate) {
             var url = parseRoute(CONFIG.endpoints.commissions.create.path, {
                 "idSession": idSession
             });
-            var method =  CONFIG.endpoints.commissions.create.method;
+            var method = CONFIG.endpoints.commissions.create.method;
             var output = tpl.render({
                 idSession: idSession,
                 sessionDate: sessionDate,
@@ -851,7 +924,6 @@ function addCommission(idSession, sessionDate) {
         }
     });
 }
-
 
 function updateBuyin(idSession, idBuyin) {
     var url = parseRoute(CONFIG.endpoints.buyins.fetch.path, {
@@ -899,7 +971,8 @@ function buyinSubmit(idSession) {
         url,
         method,
         function (response) {
-            debug('status'); debug(response.status);
+            debug('status');
+            debug(response.status);
             // Examine the text in the response
             if (response.status !== 200 && response.status !== 201) {
                 // errorHandler(response);
@@ -911,16 +984,16 @@ function buyinSubmit(idSession) {
                 return;
             }
 
-                // CERRAR EL FORMULARIO
-                $('#forms').html('');
+            // CLOSE FORM
+            $('#forms').html('');
 
-                // ACTUALIZAR LA TABLA
-                fetchBuyins(idSession);
+            // UPDATE TABLE
+            fetchBuyins(idSession);
 
-                // print ticket
-                debug(data);
-                printTicket(data);
-                debug(data);
+            // print ticket
+            debug(data);
+            printTicket(data);
+            debug(data);
 
         },
         function (err) {
@@ -964,7 +1037,6 @@ function closeTicket() {
     $('#breadcrumbs').removeClass('hide');
     $('#menu').removeClass('hide');
 }
-
 
 function addBuyin(button, idSession, sessionDate) {
     debug(sessionDate);
@@ -1213,7 +1285,7 @@ function serviceTipSubmit(idSession, form, successCallback, errorCallback) {
                 return;
             }
 
-            if(successCallback){
+            if (successCallback) {
                 successCallback(response);
             }
         },
@@ -1284,9 +1356,9 @@ function tipSubmit(idSession) {
 
             // Examine the text in the response
             response.json().then(function (data) {
-                // CERRAR EL FORMULARIO
+                // CLOSE FORM
                 $('#forms').html('');
-                // ACTUALIZAR LA TABLA
+                // UPDATE TABLE
                 fetchDealerTips(idSession);
                 debug(data);
             });
@@ -1429,7 +1501,8 @@ function userSessionSubmit(idSession) {
     var method = $('#usersession-form').attr("method");
     var form = new FormData(document.getElementById('usersession-form'));
     debug('url y method submit');
-    debug(url); debug(method);
+    debug(url);
+    debug(method);
     makeAPIRequest(
         url,
         method,
@@ -1441,9 +1514,9 @@ function userSessionSubmit(idSession) {
 
             // Examine the text in the response
             response.json().then(function (data) {
-                // CERRAR EL FORMULARIO
+                // CLOSE FORM
                 $('#forms').html('');
-                // ACTUALIZAR LA TABLA
+                // UPDATE TABLE
                 fetchUsersSession(idSession);
                 debug(data);
             });
@@ -1576,9 +1649,9 @@ function userSubmit() {
 
             // Examine the text in the response
             response.json().then(function (data) {
-                // CERRAR EL FORMULARIO
+                // CLOSE FORM
                 $('#forms').html('');
-                // ACTUALIZAR LA TABLA
+                // UPDATE TABLE
                 fetchUsers();
             });
         },
@@ -1748,9 +1821,9 @@ function sessionSubmit() {
 
             // Examine the text in the response
             response.json().then(function (data) {
-                // CERRAR EL FORMULARIO
+                // CLOSE FORM
                 $('#forms').html('');
-                // ACTUALIZAR LA TABLA
+                // UPDATE TABLE
                 fetchSessions();
             });
         },
@@ -1760,7 +1833,6 @@ function sessionSubmit() {
 }
 
 function addSession() {
-    // cargo el template de form
     var template = twig({
         href: 'templates/session-form.twig',
         async: false,
