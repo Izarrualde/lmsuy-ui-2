@@ -16,19 +16,23 @@
 	
 </head>
 
-<body>
-    <div idclass="container">
+<body onload="checkLogin();">
+    <div id="head" class="container">
         <div class="col-md-12 col-sm-8 col-xs-8">
 			<ul id="menu" class="nav nav-pills">
 			  <li class="nav-item">
-			  	<button type="button" class="nav-link btn btn-outline-primary disabled" href="#">Inicio</button>
+			  	<button type="button" id="menuitem-start" class="nav-link btn btn-outline-primary" href="#">Inicio</button>
 			  </li>
 			  <li class="nav-item">
-			  	<button type="button" onclick="fetchSessions();" id="menuitem-sessions" class="nav-link btn btn-outline-primary" href="#">Sesiones</button>
+			  	<button type="button" onclick="fetchSessions();" id="menuitem-sessions" class="nav-link btn btn-outline-primary " href="#">Sesiones</button>
 			  </li>
 			  <li class="nav-item">
-			  	<button type="button" onclick="fetchUsers();" id="menuitem-users" class="nav-link btn btn-outline-primary" href="#">Usuarios</button>
+			  	<button type="button" onclick="fetchUsers();" id="menuitem-users" class="nav-link btn btn-outline-primary " href="#">Usuarios</button>
 			  </li>
+
+				<li class="nav-item">
+					<button type="button" onclick="logout();" id="logout" class="nav-link btn btn-outline-danger" href="#">Salir</button>
+				</li>
 			</ul>
 
             <nav id="breadcrumbs" aria-label="breadcrumb">
@@ -40,19 +44,53 @@
             <div id="loader">
             	<div class="lds-ripple"><div></div><div></div></div>
             </div>
-
-            <div id="ticket" class="card">
-
-            </div>
-
-            <div id="main" class="card">      
-            </div>
-
-            <div id="forms" class="card">        
-            </div>
- 
         </div>
     </div>
+
+
+	<div class="container hide" id="login-div">
+		<div class="col-md-8">
+			<div class="card">
+				<div class="card-header bg-primary text-white">
+					ACCEDER
+				</div>
+				<div class="card-body">
+					<section class="container row justify-content-center">
+						<article>
+							<form class="was-validated" id="login-form" action="http://www.lms-api-2.local/oauth" method="post">
+
+								<input id="client_id" name="client_id" type="hidden" value="web">
+								<input id="grant_type" name="grant_type" type="hidden" value="password">
+								<div class="form-group">
+									<label for="username"> Celular: </label>
+									<input class="form-control" name="username" id="username" type="text" placeholder="Número de celular" required>
+								</div>
+								<div class="form-group">
+									<label for="password"> Password: </label>
+									<input class="form-control" name="password" id="password" type="password" placeholder="Password" required>
+								</div>
+
+								<div class="form-group">
+									<input onclick="loginSubmit()" class="btn btn-lg btn-block btn-primary" type="button" value="iniciar sesión" />
+								</div>
+								<br><br><br><br>
+							</form>
+						</article>
+					</section>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="ticket" class="card">
+
+	</div>
+
+	<div id="main" class="card">
+	</div>
+
+	<div id="forms" class="card">
+	</div>
 </body>
 
 </html>
