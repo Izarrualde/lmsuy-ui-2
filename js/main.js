@@ -304,12 +304,12 @@ function loadView(url, method, templatePath, renderer, errorHandler) {
 }
 
 function checkLogin() {
-    debug('check');
     debug(window.localStorage.getItem('access_token'));
 
     if (window.localStorage.getItem('access_token') == null) {
         $('#menuitem-sessions').addClass('disabled');
         $('#menuitem-users').addClass('disabled');
+        $('#menuitem-statistics').addClass('disabled');
         $('#logout').addClass('disabled');
 
         $('#login-div').removeClass('hide');
@@ -352,6 +352,7 @@ function loginSubmit() {
                 // ENABLE BUTTONS
                 $('#menuitem-sessions').removeClass('disabled');
                 $('#menuitem-users').removeClass('disabled');
+                $('#menuitem-statistics').removeClass('disabled');
                 $('#logout').removeClass('disabled');
             });
         },
@@ -386,34 +387,41 @@ function fetchSessions() {
 }
 
 function deleteSession(idSession) {
+    // refact
     var url = parseRoute(CONFIG.endpoints.sessions.delete.path, {
         "idSession": idSession
     });
     var method = CONFIG.endpoints.sessions.delete.method;
+    var errorHandler = function (err) {
+        console.log(err)
+    };
 
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
                 return;
             }
 
+            alert('Session eliminada exitosamente');
             fetchSessions();
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
 function calculatePoints(idSession) {
+    // refact
     var url = parseRoute(CONFIG.endpoints.sessions.calculatePoints.path, {
         "idSession": idSession
     });
     var method = CONFIG.endpoints.sessions.calculatePoints.method;
-    debug('en calculate points');
     debug(url);
     debug(method);
 
@@ -422,11 +430,15 @@ function calculatePoints(idSession) {
         method,
         function (response) {
             if (response.status !== 200) {
-                errorHandler(response);
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
                 return;
             }
 
-            debug('puntos cargados');
+            alert('puntos cargados');
             fetchSessions();
         },
         function (err) {
@@ -436,7 +448,6 @@ function calculatePoints(idSession) {
 }
 
 function revisionSession(idSession) {
-    debug('en revision session');
     var url = parseRoute(CONFIG.endpoints.sessions.fetch.path, {
         "idSession": idSession
     });
@@ -490,23 +501,32 @@ function deleteUser(idUser) {
         "idUser": idUser
     });
     var method = CONFIG.endpoints.users.delete.method;
+    var errorHandler = function (err) {
+        console.log(err)
+    };
+
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
                 return;
             }
+
+            alert('Usuario eliminado exitosamente');
             fetchUsers();
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
 function fetchBuyins(idSession, countSeatedPlayers, sessionDate) {
+    debug(countSeatedPlayers);
     $('#forms').html('');
     var url = parseRoute(CONFIG.endpoints.buyins.fetchAll.path, {
         "idSession": idSession
@@ -525,7 +545,6 @@ function fetchBuyins(idSession, countSeatedPlayers, sessionDate) {
                 sessionDate: sessionDate,
                 countSeatedPlayers: countSeatedPlayers
             });
-            debug(data._embedded.buyins);
             $('#main').html(output);
         },
         function (err) {
@@ -1089,7 +1108,7 @@ function addBuyin(button, idSession, sessionDate) {
                         response.json().then(function (data) {
                             data._embedded.users_session.forEach(function (item) {
                                 debug(item);
-                                if (item.endTime == null) {
+                                if (item.end == null) {
                                     $('#idUserSession').append('<option value="' + item.id + '">' + item._embedded.user.name + ' ' + item._embedded.user.lastname + '</option>');
                                 }
                             });
@@ -1318,7 +1337,6 @@ function dealerTipSubmit(idSession) {
                 return;
             }
 
-            debug('previo service');
             serviceTipSubmit(idSession, form, response, errorHandler);
             // Examine the text in the response
             response.json().then(function (data) {
@@ -1582,7 +1600,6 @@ function addUserSession(idSession) {
     });
 }
 
-
 function updateUser(idUser) {
     var url = parseRoute(CONFIG.endpoints.users.fetch.path, {
         "idUser": idUser
@@ -1661,6 +1678,7 @@ function userSubmit() {
 }
 
 function addUser() {
+    // refact
     var template = twig({
         href: 'templates/user-form.twig',
         async: false,
@@ -1676,7 +1694,6 @@ function addUser() {
                 buttonName: 'Agregar'
             });
             $('#forms').html(output);
-            $('#password').val(1234);
             $('#active').val(1);
             $('#sessions').val(0);
             $('#points').val(0);
