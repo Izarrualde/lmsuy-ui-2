@@ -422,8 +422,6 @@ function calculatePoints(idSession) {
         "idSession": idSession
     });
     var method = CONFIG.endpoints.sessions.calculatePoints.method;
-    debug(url);
-    debug(method);
 
     makeAPIRequest(
         url,
@@ -448,10 +446,10 @@ function calculatePoints(idSession) {
 }
 
 function revisionSession(idSession) {
+    // revised
     var url = parseRoute(CONFIG.endpoints.sessions.fetch.path, {
         "idSession": idSession
     });
-    debug(url);
     var method = CONFIG.endpoints.sessions.fetch.method;
     loadView(
         url,
@@ -497,6 +495,7 @@ function fetchUsers() {
 }
 
 function deleteUser(idUser) {
+    // refact
     var url = parseRoute(CONFIG.endpoints.users.delete.path, {
         "idUser": idUser
     });
@@ -554,25 +553,30 @@ function fetchBuyins(idSession, countSeatedPlayers, sessionDate) {
 }
 
 function deleteBuyin(idSession, idBuyin) {
+    // refact
     var url = parseRoute(CONFIG.endpoints.buyins.delete.path, {
         "idBuyin": idBuyin,
         "idSession": idSession
     });
     var method = CONFIG.endpoints.buyins.delete.method;
+    var errorHandler = function (err) {
+        console.log(err)
+    };
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
-                return;
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
             }
-
+            alert('Buyin eliminado exitosamente.');
             fetchBuyins(idSession);
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
@@ -605,26 +609,32 @@ function fetchCommissions(idSession, commissionTotal, sessionDate) {
 }
 
 function deleteCommission(idSession, idCommission) {
+    // refact
     var url = parseRoute(CONFIG.endpoints.commissions.delete.path, {
         "idCommission": idCommission,
         "idSession": idSession
     });
     var method = CONFIG.endpoints.commissions.delete.method;
+    var errorHandler = function (err) {
+        console.log(err)
+    };
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
-                return;
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
             }
 
+            alert('Comisión eliminada exitosamente.')
             fetchCommissions(idSession);
             debug(data);
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
@@ -664,28 +674,31 @@ function fetchUsersSession(idSession) {
 }
 
 function deleteUserSession(idSession, idUserSession) {
+    // refact
     var url = parseRoute(CONFIG.endpoints.userSession.delete.path, {
         "idUserSession": idUserSession,
         "idSession": idSession
     });
-
-    debug("url");
-    debug(url);
     var method = CONFIG.endpoints.userSession.delete.method;
+    var errorHandler = function (err) {
+        console.log(err)
+    };
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
-                return;
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
             }
 
+            alert('Usuario eliminado existosamente de la sesión.')
             fetchUsersSession(idSession);
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
@@ -713,25 +726,31 @@ function fetchExpenses(idSession) {
 }
 
 function deleteExpenditure(idSession, idExpenditure) {
+    // refact
     var url = parseRoute(CONFIG.endpoints.expenses.delete.path, {
         "idExpenditure": idExpenditure,
         "idSession": idSession
     });
     var method = CONFIG.endpoints.expenses.delete.method;
+    var errorHandler = function (err) {
+        console.log(err)
+    };
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
-                return;
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
             }
 
+            alert('Gasto eliminado exitosamente.')
             fetchExpenses(idSession);
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
@@ -784,49 +803,62 @@ function fetchDealerTips(idSession, sessionDate) {
 }
 
 function deleteDealerTip(idSession, idDealerTip) {
+    // refact
     var url = parseRoute(CONFIG.endpoints.dealerTips.deleteDealerTip.path, {
         "idDealerTip": idDealerTip,
         "idSession": idSession
     });
     var method = CONFIG.endpoints.dealerTips.deleteDealerTip.method;
+    var errorHandler = function (err) {
+        console.log(err)
+    };
 
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
-                return;
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
             }
+
+            alert('DealerTip eliminado exitosamente.')
             fetchDealerTips(idSession);
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
 function deleteServiceTip(idSession, idServiceTip) {
+    // refact
     var url = parseRoute(CONFIG.endpoints.serviceTips.deleteServiceTip.path, {
         "idServiceTip": idServiceTip,
         "idSession": idSession
     });
     var method = CONFIG.endpoints.serviceTips.deleteServiceTip.method;
+    var errorHandler = function (err) {
+        console.log(err)
+    };
 
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
-                return;
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
             }
 
+            alert('ServiceTip eliminado exitosamente.')
             fetchDealerTips(idSession);
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
@@ -867,6 +899,7 @@ function updateCommission(idSession, idCommission) {
                 idSession: idSession
             });
             debug(data);
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idSession').val(data.idSession);
@@ -936,6 +969,7 @@ function addCommission(idSession, sessionDate) {
                 method: method,
                 buttonName: 'Agregar'
             });
+            $('#main').html('');
             $('#forms').html(output);
             $('#idSession').val(idSession);
             $('#hour').val(suggestedDate(sessionDate));
@@ -965,6 +999,7 @@ function updateBuyin(idSession, idBuyin) {
                 idSession: idSession
             });
 
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idSession').val(data.idSession);
@@ -1147,6 +1182,7 @@ function updateExpenditure(idSession, idExpenditure) {
                 idSession: idSession
             });
 
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idSession').val(data.idSession);
@@ -1207,6 +1243,7 @@ function addExpenditure(idSession) {
                 method: method,
                 buttonName: 'Agregar'
             });
+            $('#main').html('');
             $('#forms').html(output);
             $('#idSession').val(idSession);
         }
@@ -1238,6 +1275,7 @@ function updateDealerTip(idSession, idDealerTip) {
                 idSession: idSession
             });
 
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idSession').val(idSession);
@@ -1276,6 +1314,7 @@ function updateServiceTip(idSession, idServiceTip) {
                 idSession: idSession
             });
 
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idSession').val(idSession);
@@ -1409,6 +1448,7 @@ function addTips(idSession, sessionDate) {
                 method: method,
                 buttonName: 'Agregar'
             });
+            $('#main').html('');
             $('#forms').html(output);
             $('#idSession').val(idSession);
             $('#hour').val(suggestedDate(sessionDate));
@@ -1445,6 +1485,7 @@ function updateUserSession(button, idSession, idUserSession) {
             });
 
             debug(data);
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idUser').val(data._embedded.user.id);
@@ -1498,6 +1539,7 @@ function closeUserSession(button, idSession, idUserSession) {
                 idSession: idSession
             });
 
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idUser').val(data._embedded.user.id);
@@ -1565,6 +1607,7 @@ function addUserSession(idSession) {
                 buttonName: 'Agregar'
             });
 
+            $('#main').html('');
             $('#forms').html(output);
             $('#idSession').val(idSession);
             $('#approved').val(1);
@@ -1620,10 +1663,7 @@ function updateUser(idUser) {
                 buttonName: 'Editar'
             });
 
-            debug(parseRoute(CONFIG.endpoints.users.update.path, {
-                "idUser": idUser
-            }));
-            debug(CONFIG.endpoints.users.update.method);
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#lastname').val(data.lastname);
@@ -1693,6 +1733,7 @@ function addUser() {
                 method: method,
                 buttonName: 'Agregar'
             });
+            $('#main').html('');
             $('#forms').html(output);
             $('#active').val(1);
             $('#sessions').val(0);
@@ -1770,6 +1811,7 @@ function updateSession(idSession) {
             });
             debug('data para update');
             debug(data);
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idSession').val(data.idSession);
@@ -1865,6 +1907,7 @@ function addSession() {
                 method: method,
                 buttonName: 'Agregar'
             });
+            $('#main').html('');
             $('#forms').html(output);
             $('#date').val(now["date"]);
             $('#start_at').val(now["date"] + "T" + now["hour"]);
@@ -1919,4 +1962,93 @@ function rotationTitle() {
 function rotationSeats() {
     $('.show-column .seats').toggleClass('hide-me');
     $('.show-column .seats-history').toggleClass('hide-me');
+}
+
+function requestStatistics () {
+    var template = twig({
+        href: 'templates/statistics-form.twig',
+        async: false,
+        // The default is to load asynchronously, and call the load function
+        //   when the template is loaded.
+        load: function (tpl) {
+            var output = tpl.render({
+            });
+            $('#main').html('');
+            $('#forms').html(output);
+        }
+    });
+}
+
+function fetchCommissionStatistics() {
+
+}
+
+function fetchDealerTipsStatistics() {
+
+}
+
+function fetchServiceTipsStatistics() {
+
+}
+
+
+function statisticsSubmit(form) {
+
+    var form = new FormData(document.getElementById('statistics-form'));
+    var errorHandler = function (err) {
+        console.log(err)
+    };
+
+    // statistics of commissions
+    var url = '/statistics/commissions';
+    var method = 'post';
+
+    makeAPIRequest(
+        url,
+        method,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+
+            // Aca output al widget? con la data de la response
+            // TODO
+        },
+        errorHandler,
+        form
+    );
+
+    // statistics of dealerTips
+    /*
+    var url = '/statistics/dealer-tips';
+    var method = 'post';
+
+    makeAPIRequest(
+        url,
+        method,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+        },
+        errorHandler,
+        form
+    );
+    */
+
+    // close form
+    $('#forms').html('');
+
 }

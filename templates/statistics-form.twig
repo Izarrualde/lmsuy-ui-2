@@ -1,0 +1,34 @@
+<div class="container">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                Solicitud de estadísticas
+            </div>
+            <div class="card-body">
+                <section class="container row justify-content-center">
+                    <article>
+                        <form class="was-validated" id="statistics-form" onsubmit="statisticsSubmit(); return false;" action="{{ action }}" method="{{ method }}">
+
+                            <div class="form-group">
+                                <label for="from"> Desde: </label>
+                                <input class="form-control" name="from" id="from" type="date" required>
+                                <small id="hour" class="form-tet text-muted"> Desde </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="to"> Hasta: </label>
+                                <input class="form-control" name="to" id="to" type="date" required>
+                                <small id="hour" class="form-tet text-muted"> Hasta </small>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="btn btn-lg btn-block btn-primary" type="submit" value="Graficar" />
+                            </div>
+                            <br><br><br><br>
+                        </form>
+                    </article>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>

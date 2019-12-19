@@ -41,7 +41,7 @@
 
                             <a href="#" onclick="fetchBuyins({{ session.id }}, {{ session.seatedPlayers|length }}, '{{ session.startTimeReal.date }}');" class="btn btn-sm btn-secondary"> <i class="fas fa-money-bill"></i></a>
 
-                            <a href="#" onclick="fetchTips({{ session.id }}, '{{ session.startTimeReal.date }}');" class="btn btn-sm btn-danger"> <i class="fas fa-hand-holding-usd"></i></a>
+                            <a href="#" onclick="fetchDealerTips({{ session.id }}, '{{ session.startTimeReal.date }}');" class="btn btn-sm btn-danger"> <i class="fas fa-hand-holding-usd"></i></a>
 
                             <a href="#" onclick="fetchCommissions({{ session.id }}, {{ session.commissionTotal }}, '{{ session.startTimeReal.date }}');" class="btn btn-sm btn-success"> <i class="fas fa-dollar-sign"></i></a>
 
