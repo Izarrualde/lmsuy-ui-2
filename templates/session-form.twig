@@ -28,7 +28,7 @@
                                 <small id="end" class="form-tet text-muted"> Fecha </small>
                             </div>
                             <div class="form-group">
-                                <label for="cashout"> Seats: </label>
+                                <label for="seats"> Seats: </label>
                                 <input class="form-control" name="seats" id="seats" type="text" placeholder="seats" required="true" value="9">
                             </div>
                             <div class="form-group">
@@ -36,12 +36,14 @@
                                 <input class="form-control" name="start_at" id="start_at" type="datetime-local" placeholder="hora de inicio" required="true">
                                 <small id="end" class="form-tet text-muted"> Fecha y hora de inicio </small>
                             </div>
-                            <div class="form-group">
+
+                            <div id="real_hour" class="form-group {% if session.startTimeReal is empty %} inactive-data  {% endif %}">
                                 <label for="horaInicio"> hora inicio real: </label>
                                 <input class="form-control" name="real_start_at" id="real_start_at" type="datetime-local" placeholder="hora de inicio real">
-                                <small id="end" class="form-tet text-muted"> Fecha y hora de inicio real </small>
+                                <small id="real_start_at" class="form-tet text-muted"> Fecha y hora de inicio real </small>
                             </div>
-                            <div class="form-group">
+
+                            <div id="end_session" class="form-group {% if session.endTime is empty %} inactive-data  {% endif %}">
                                 <label for="end"> hora fin: </label>
                                 <input class="form-control" name="end_at" id="end_at" type="datetime-local" placeholder="hora de fin">
                                 <small id="end" class="form-tet text-muted"> Fecha y hora de finalización </small>

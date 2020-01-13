@@ -47,6 +47,10 @@ form.active-player .inactive-data {
     display: none;
 }
 
+.inactive-data {
+    display: none;
+}
+
 .button-disabled {
     opacity: 0.3;
     cursor: default;

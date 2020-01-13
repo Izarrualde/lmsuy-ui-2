@@ -30,8 +30,8 @@
                                 <a href="#" class="btn btn-sm btn-dark" onclick="stopSession({{ session.id }}); return false"> <i class="fas fa-stop"></i>
                                     {% endif %}
                         </td>
-                        <td><span class="date"> {{ session.created_at.date|date("d/m/Y") }} </span>
-                            <span class="day hide-me"> {{ session.created_at.date|date('l') }} </span> </td>
+                        <td><span class="date"> {{ session.date.date|date("d/m/Y") }} </span>
+                            <span class="day hide-me"> {{ session.date.date|date('l') }} </span> </td>
                         <td> <span class="title"> {{session.title}} </span> <span class="descrip hide-me"> {{ session.description|default("-") }}</span> </td>
                         <td> <span class="seats"> {{ session.seats }} </span> <span class="seats-history hide-me"> {{ session.activePlayers|length }}/{{ session.distinctPlayers|length }} </span></td>
                         <td>{{ session.startTime ? session.startTime.date|date('H:i') : "-" }}</td>
