@@ -234,10 +234,9 @@ function hideLoader() {
 }
 
 function getCurrentDate() {
-    var currentDate = new Date();
-    debug(currentDate.getDate());
-    var date = currentDate.getFullYear() + "-" + (((currentDate.getMonth() + 1) < 10) ? "0" : "") + (currentDate.getMonth() + 1) + "-" + ((currentDate.getDate() < 10) ? "0" : "") + currentDate.getDate();
-    var hour = ((currentDate.getHours() < 10) ? "0" : "") + currentDate.getHours() + ":" + ((currentDate.getMinutes() < 10) ? "0" : "") + currentDate.getMinutes();
+    var currentDate = new Date(),
+        date = currentDate.getFullYear() + "-" + (((currentDate.getMonth() + 1) < 10) ? "0" : "") + (currentDate.getMonth() + 1) + "-" + ((currentDate.getDate() < 10) ? "0" : "") + currentDate.getDate(),
+        hour = ((currentDate.getHours() < 10) ? "0" : "") + currentDate.getHours() + ":" + ((currentDate.getMinutes() < 10) ? "0" : "") + currentDate.getMinutes();
 
     return {
         "date": date,
@@ -248,12 +247,12 @@ function getCurrentDate() {
 function makeAPIRequest(url, method, successCallback, errorCallback, body) {
     showLoader();
     var req = {
-        method: method,
-        headers: {
-            "Accept": "application/json"
-        }
-    };
-    var token = window.localStorage.getItem('access_token');
+            method: method,
+            headers: {
+                "Accept": "application/json"
+            }
+        },
+        token = window.localStorage.getItem('access_token');
 
     if (body !== undefined) {
         req.body = body;
@@ -322,12 +321,12 @@ function logout() {
 }
 
 function loginSubmit() {
-    var url = $('#login-form').attr("action");
-    var method = $('#login-form').attr("method");
-    var form = new FormData(document.getElementById('login-form'));
+    var url = $('#login-form').attr("action"),
+        method = $('#login-form').attr("method"),
+        form = new FormData(document.getElementById('login-form'));
 
     var errorHandler = function (err) {
-        console.log(err)
+        debug(err)
     };
 
     makeAPIRequest(
@@ -366,8 +365,11 @@ function fetchSessions() {
     $('#menuitem-sessions').addClass('active');
     $('#forms').html('');
 
-    var url = parseRoute(CONFIG.endpoints.sessions.fetchAll.path, {});
-    var method = CONFIG.endpoints.sessions.fetchAll.method;
+    var url = parseRoute(CONFIG.endpoints.sessions.fetchAll.path, {}),
+        method = CONFIG.endpoints.sessions.fetchAll.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err);
+        };
 
     loadView(
         url,
@@ -380,21 +382,18 @@ function fetchSessions() {
             debug(data);
             $('#main').html(output);
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function deleteSession(idSession) {
-    // refact
     var url = parseRoute(CONFIG.endpoints.sessions.delete.path, {
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.sessions.delete.method;
-    var errorHandler = function (err) {
-        console.log(err)
-    };
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.sessions.delete.method,
+        errorHandler = function (err) {
+            debug(err)
+        };
 
     makeAPIRequest(
         url,
@@ -417,13 +416,13 @@ function deleteSession(idSession) {
 }
 
 function calculatePoints(idSession) {
-    // refact
     var url = parseRoute(CONFIG.endpoints.sessions.calculatePoints.path, {
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.sessions.calculatePoints.method;
-    debug(url);
-    debug(method);
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.sessions.calculatePoints.method,
+        errorHandler = function (err) {
+            debug(err)
+        };
 
     makeAPIRequest(
         url,
@@ -441,18 +440,16 @@ function calculatePoints(idSession) {
             alert('puntos cargados');
             fetchSessions();
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
 function revisionSession(idSession) {
     var url = parseRoute(CONFIG.endpoints.sessions.fetch.path, {
-        "idSession": idSession
-    });
-    debug(url);
-    var method = CONFIG.endpoints.sessions.fetch.method;
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.sessions.fetch.method;
+
     loadView(
         url,
         method,
@@ -477,8 +474,11 @@ function fetchUsers() {
     $('.nav-link.active').removeClass('active');
     $('#menuitem-users').addClass('active');
     $('#forms').html('');
-    var url = parseRoute(CONFIG.endpoints.users.fetchAll.path, {});
-    var method = CONFIG.endpoints.users.fetchAll.method;
+    var url = parseRoute(CONFIG.endpoints.users.fetchAll.path, {}),
+        method = CONFIG.endpoints.users.fetchAll.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
 
     loadView(
         url,
@@ -490,20 +490,22 @@ function fetchUsers() {
             });
             $('#main').html(output);
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function deleteUser(idUser) {
     var url = parseRoute(CONFIG.endpoints.users.delete.path, {
-        "idUser": idUser
-    });
-    var method = CONFIG.endpoints.users.delete.method;
-    var errorHandler = function (err) {
-        console.log(err)
-    };
+            "idUser": idUser
+        }),
+        method = CONFIG.endpoints.users.delete.method,
+        errorHandler = function (err) {
+            debug(err)
+        };
+
+    if (! confirm("¿Está seguro que desea eliminar el usuario?")) {
+        return;
+    }
 
     makeAPIRequest(
         url,
@@ -526,12 +528,14 @@ function deleteUser(idUser) {
 }
 
 function fetchBuyins(idSession, countSeatedPlayers, sessionDate) {
-    debug(countSeatedPlayers);
     $('#forms').html('');
     var url = parseRoute(CONFIG.endpoints.buyins.fetchAll.path, {
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.buyins.fetchAll.method;
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.buyins.fetchAll.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
 
     loadView(
         url,
@@ -547,41 +551,53 @@ function fetchBuyins(idSession, countSeatedPlayers, sessionDate) {
             });
             $('#main').html(output);
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function deleteBuyin(idSession, idBuyin) {
     var url = parseRoute(CONFIG.endpoints.buyins.delete.path, {
-        "idBuyin": idBuyin,
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.buyins.delete.method;
+            "idBuyin": idBuyin,
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.buyins.delete.method,
+        errorHandler = function (err) {
+            debug(err)
+        };
+
+    if (! confirm("¿Está seguro que desea eliminar el buyin?")) {
+        return;
+    }
+
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
                 return;
             }
 
+            alert('Buyin eliminado exitosamente.');
             fetchBuyins(idSession);
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
 function fetchCommissions(idSession, commissionTotal, sessionDate) {
     $('#forms').html('');
     var url = parseRoute(CONFIG.endpoints.commissions.fetchAll.path, {
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.commissions.fetchAll.method;
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.commissions.fetchAll.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
 
     loadView(
         url,
@@ -598,44 +614,54 @@ function fetchCommissions(idSession, commissionTotal, sessionDate) {
             debug(data);
             $('#main').html(output);
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function deleteCommission(idSession, idCommission) {
     var url = parseRoute(CONFIG.endpoints.commissions.delete.path, {
-        "idCommission": idCommission,
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.commissions.delete.method;
+            "idCommission": idCommission,
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.commissions.delete.method,
+        errorHandler = function (err) {
+            debug(err)
+        };
+
+    if (! confirm("¿Está seguro que desea eliminar la comisión?")) {
+        return;
+    }
+
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
                 return;
             }
 
+            alert('Comisión eliminada exitosamente.');
             fetchCommissions(idSession);
             debug(data);
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
 function fetchUsersSession(idSession) {
     $('#forms').html('');
     var url = parseRoute(CONFIG.endpoints.userSession.fetchAll.path, {
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.userSession.fetchAll.method;
-    debug(url);
-    debug(method);
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.userSession.fetchAll.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
 
     loadView(
         url,
@@ -643,7 +669,6 @@ function fetchUsersSession(idSession) {
         'templates/userssession-list.twig',
         function (template, data) {
             debug(data);
-            debug('del usersession');
             var output = template.render({
                 usersSession: data._embedded.users_session,
                 idSession: idSession
@@ -651,50 +676,55 @@ function fetchUsersSession(idSession) {
             $('#main').html(output);
 
             debug(data)
-            /*data.forEach(function(item) {
-              if ((item.cashin) > 0) {
-                $('#item.id').addClass("button-disabled");
-              }
-            });*/
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function deleteUserSession(idSession, idUserSession) {
     var url = parseRoute(CONFIG.endpoints.userSession.delete.path, {
-        "idUserSession": idUserSession,
-        "idSession": idSession
-    });
+            "idUserSession": idUserSession,
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.userSession.delete.method,
+        errorHandler = function (err) {
+            debug(err)
+        };
 
-    debug("url");
-    debug(url);
-    var method = CONFIG.endpoints.userSession.delete.method;
+    if (! confirm("¿Está seguro que desea eliminar el usuario d la sesión?")) {
+        return;
+    }
+
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
                 return;
             }
 
+            alert('Usuario eliminado existosamente de la sesión.')
             fetchUsersSession(idSession);
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
 function fetchExpenses(idSession) {
     $('#forms').html('');
     var url = parseRoute(CONFIG.endpoints.expenses.fetchAll.path, {
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.expenses.fetchAll.method;
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.expenses.fetchAll.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
     loadView(
         url,
         method,
@@ -706,32 +736,41 @@ function fetchExpenses(idSession) {
             });
             $('#main').html(output);
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function deleteExpenditure(idSession, idExpenditure) {
     var url = parseRoute(CONFIG.endpoints.expenses.delete.path, {
-        "idExpenditure": idExpenditure,
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.expenses.delete.method;
+            "idExpenditure": idExpenditure,
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.expenses.delete.method,
+        errorHandler = function (err) {
+            debug(err)
+        };
+
+    if (! confirm("¿Está seguro que desea eliminar el item?")) {
+        return;
+    }
+
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
                 return;
             }
 
+            alert('Gasto eliminado exitosamente.')
             fetchExpenses(idSession);
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
@@ -757,7 +796,7 @@ async function fetchServiceTips(template, dataDealerTips, sessionDate, idSession
             $('#main').html(output);
         },
         function (err) {
-            console.log(err)
+            debug(err)
         },
     )
 }
@@ -765,9 +804,12 @@ async function fetchServiceTips(template, dataDealerTips, sessionDate, idSession
 function fetchDealerTips(idSession, sessionDate) {
     $('#forms').html('');
     var url = parseRoute(CONFIG.endpoints.dealerTips.fetchAll.path, {
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.dealerTips.fetchAll.method;
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.dealerTips.fetchAll.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
 
     loadView(
         url,
@@ -777,63 +819,82 @@ function fetchDealerTips(idSession, sessionDate) {
             let serviceTips;
             fetchServiceTips(template, data, sessionDate, idSession).then(r => serviceTips);
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function deleteDealerTip(idSession, idDealerTip) {
     var url = parseRoute(CONFIG.endpoints.dealerTips.deleteDealerTip.path, {
-        "idDealerTip": idDealerTip,
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.dealerTips.deleteDealerTip.method;
+            "idDealerTip": idDealerTip,
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.dealerTips.deleteDealerTip.method,
+        errorHandler = function (err) {
+            debug(err)
+        };
+
+    if (! confirm("¿Está seguro que desea eliminar el dealer tip?")) {
+        return;
+    }
 
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
                 return;
             }
+
+            alert('DealerTip eliminado exitosamente.')
             fetchDealerTips(idSession);
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
 function deleteServiceTip(idSession, idServiceTip) {
     var url = parseRoute(CONFIG.endpoints.serviceTips.deleteServiceTip.path, {
-        "idServiceTip": idServiceTip,
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.serviceTips.deleteServiceTip.method;
+            "idServiceTip": idServiceTip,
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.serviceTips.deleteServiceTip.method,
+        errorHandler = function (err) {
+            debug(err)
+        };
+
+    if (! confirm("¿Está seguro que desea eliminar el service tip?")) {
+        return;
+    }
 
     makeAPIRequest(
         url,
         method,
         function (response) {
             if (response.status !== 204) {
-                errorHandler(response);
+                // examine the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                    errorHandler(response);
+                });
                 return;
             }
 
+            alert('ServiceTip eliminado exitosamente.')
             fetchDealerTips(idSession);
         },
-        function (err) {
-            console.log(err)
-        }
+        errorHandler
     );
 }
 
 function suggestedDate(sessionDate) {
-    var now = getCurrentDate();
-    var now_date = moment(now.date);
-    var session_date = moment(sessionDate);
+    var now = getCurrentDate(),
+        now_date = moment(now.date),
+        session_date = moment(sessionDate);
 
     if (now_date.diff(session_date, 'days') > 2) {
         return sessionDate.substring(0, 10) + "T" + sessionDate.substring(11, 16);
@@ -844,13 +905,14 @@ function suggestedDate(sessionDate) {
 
 function updateCommission(idSession, idCommission) {
     var url = parseRoute(CONFIG.endpoints.commissions.fetch.path, {
-        "idCommission": idCommission,
-        "idSession": idSession
-    });
-    debug(url);
-    debug('session id');
-    debug(idSession);
-    var method = CONFIG.endpoints.commissions.fetch.method;
+            "idCommission": idCommission,
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.commissions.fetch.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
     loadView(
         url,
         method,
@@ -867,6 +929,7 @@ function updateCommission(idSession, idCommission) {
                 idSession: idSession
             });
             debug(data);
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idSession').val(data.idSession);
@@ -874,20 +937,17 @@ function updateCommission(idSession, idCommission) {
             $('#hour').val(data.hour.date.substr(0, 10) + 'T' + data.hour.date.substr(11, 5));
             $('#commission').focus();
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function commissionSubmit(idSession) {
-    var url = $('#commissions-form').attr("action");
-    var method = $('#commissions-form').attr("method");
-    var form = new FormData(document.getElementById('commissions-form'));
-
-    var errorHandler = function (err) {
-        console.log(err)
-    };
+    var url = $('#commissions-form').attr("action"),
+        method = $('#commissions-form').attr("method"),
+        form = new FormData(document.getElementById('commissions-form')),
+        errorHandler = function (err) {
+            debug(err)
+        };
 
     makeAPIRequest(
         url,
@@ -906,6 +966,14 @@ function commissionSubmit(idSession) {
             // CLOSE FORM
             $('#forms').html('');
             // UPDATE TABLE
+            if (response.status == 200) {
+                alert('Comisión actualizada exitosamente.');
+            }
+
+            if (response.status == 201) {
+                alert('Comisión agregada exitosamente.');
+            }
+
             fetchCommissions(idSession);
             debug(data);
 
@@ -922,20 +990,21 @@ function addCommission(idSession, sessionDate) {
         // The default is to load asynchronously, and call the load function
         //   when the template is loaded.
         load: function (tpl) {
-            var now = getCurrentDate();
-            var url = parseRoute(CONFIG.endpoints.commissions.create.path, {
-                "idSession": idSession
-            });
-            var method = CONFIG.endpoints.commissions.create.method;
-            var output = tpl.render({
-                idSession: idSession,
-                sessionDate: sessionDate,
-                session: null,
-                title: 'Agregar comisión',
-                action: url,
-                method: method,
-                buttonName: 'Agregar'
-            });
+            var now = getCurrentDate(),
+                url = parseRoute(CONFIG.endpoints.commissions.create.path, {
+                    "idSession": idSession
+                }),
+                method = CONFIG.endpoints.commissions.create.method,
+                output = tpl.render({
+                    idSession: idSession,
+                    sessionDate: sessionDate,
+                    session: null,
+                    title: 'Agregar comisión',
+                    action: url,
+                    method: method,
+                    buttonName: 'Agregar'
+                });
+            $('#main').html('');
             $('#forms').html(output);
             $('#idSession').val(idSession);
             $('#hour').val(suggestedDate(sessionDate));
@@ -946,10 +1015,14 @@ function addCommission(idSession, sessionDate) {
 
 function updateBuyin(idSession, idBuyin) {
     var url = parseRoute(CONFIG.endpoints.buyins.fetch.path, {
-        "idBuyin": idBuyin,
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.buyins.fetch.method;
+            "idBuyin": idBuyin,
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.buyins.fetch.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
     loadView(
         url,
         method,
@@ -965,6 +1038,7 @@ function updateBuyin(idSession, idBuyin) {
                 idSession: idSession
             });
 
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idSession').val(data.idSession);
@@ -976,35 +1050,40 @@ function updateBuyin(idSession, idBuyin) {
             $('#hour').val(data.hour.date.substr(0, 10) + 'T' + data.hour.date.substr(11, 5));
             $('#amountCash').focus();
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function buyinSubmit(idSession) {
-    var url = $('#buyins-form').attr("action");
-    var method = $('#buyins-form').attr("method");
-    var form = new FormData(document.getElementById('buyins-form'));
+    var url = $('#buyins-form').attr("action"),
+        method = $('#buyins-form').attr("method"),
+        form = new FormData(document.getElementById('buyins-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
     makeAPIRequest(
         url,
         method,
         function (response) {
-            debug('status');
-            debug(response.status);
             // Examine the text in the response
             if (response.status !== 200 && response.status !== 201) {
                 // errorHandler(response);
                 response.json().then(function (data) {
-
                     alert(data.detail);
                 });
-
                 return;
             }
 
             // CLOSE FORM
             $('#forms').html('');
+            if (response.status == 200) {
+                alert('Buyin actualizado exitosamente.');
+            }
+
+            if (response.status == 201) {
+                alert('Buyin agregado exitosamente.');
+            }
 
             // UPDATE TABLE
             fetchBuyins(idSession);
@@ -1015,9 +1094,7 @@ function buyinSubmit(idSession) {
             debug(data);
 
         },
-        function (err) {
-            console.log(err)
-        },
+        errorHandler,
         form
     );
 }
@@ -1058,7 +1135,6 @@ function closeTicket() {
 }
 
 function addBuyin(button, idSession, sessionDate) {
-    debug(sessionDate);
     if ($(button).hasClass("button-disabled")) {
         return;
     }
@@ -1071,17 +1147,17 @@ function addBuyin(button, idSession, sessionDate) {
         load: function (tpl) {
 
             var url = parseRoute(CONFIG.endpoints.buyins.create.path, {
-                "idSession": idSession
-            });
-            var method = CONFIG.endpoints.buyins.create.method;
-            var output = tpl.render({
-                idSession: idSession,
-                sessionDate: sessionDate,
-                session: null,
-                title: 'Agregar Buyin',
-                action: url,
-                buttonName: 'Agregar'
-            });
+                    "idSession": idSession
+                }),
+                method = CONFIG.endpoints.buyins.create.method,
+                output = tpl.render({
+                    idSession: idSession,
+                    sessionDate: sessionDate,
+                    session: null,
+                    title: 'Agregar Buyin',
+                    action: url,
+                    buttonName: 'Agregar'
+                });
             $('#forms').html(output);
             $('#idSession').val(idSession);
             // $('#hour').val(now["date"] + "T" + now["hour"]);
@@ -1091,34 +1167,34 @@ function addBuyin(button, idSession, sessionDate) {
             $('#amountCash').focus();
             var url_usersSession = parseRoute(CONFIG.endpoints.userSession.fetchAll.path, {
                 "idSession": idSession
-            });
-            var method_fetchAll = CONFIG.endpoints.userSession.fetchAll.method;
-            var loadUsers = function () {
-                makeAPIRequest(
-                    url_usersSession,
-                    method_fetchAll,
-                    function (response) {
-                        if (response.status !== 200) {
-                            // si falla fetch usuarios hay que reintentarlo con un max retries
-                            //loadUsers();
-                            return;
-                        }
+            }),
+                method_fetchAll = CONFIG.endpoints.userSession.fetchAll.method,
+                loadUsers = function () {
+                    makeAPIRequest(
+                        url_usersSession,
+                        method_fetchAll,
+                        function (response) {
+                            if (response.status !== 200) {
+                                // si falla fetch usuarios hay que reintentarlo con un max retries
+                                //loadUsers();
+                                return;
+                            }
 
-                        // Examine the text in the response
-                        response.json().then(function (data) {
-                            data._embedded.users_session.forEach(function (item) {
-                                debug(item);
-                                if (item.end == null) {
-                                    $('#idUserSession').append('<option value="' + item.id + '">' + item._embedded.user.name + ' ' + item._embedded.user.lastname + '</option>');
-                                }
+                            // Examine the text in the response
+                            response.json().then(function (data) {
+                                data._embedded.users_session.forEach(function (item) {
+                                    debug(item);
+                                    if (item.end == null) {
+                                        $('#idUserSession').append('<option value="' + item.id + '">' + item._embedded.user.name + ' ' + item._embedded.user.lastname + '</option>');
+                                    }
+                                });
                             });
-                        });
-                    },
-                    function (err) {
-                        console.log(err)
-                    },
-                );
-            };
+                        },
+                        function (err) {
+                            debug(err)
+                        },
+                    );
+                };
             loadUsers();
         }
     });
@@ -1126,10 +1202,14 @@ function addBuyin(button, idSession, sessionDate) {
 
 function updateExpenditure(idSession, idExpenditure) {
     var url = parseRoute(CONFIG.endpoints.expenses.fetch.path, {
-        "idExpenditure": idExpenditure,
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.expenses.fetch.method;
+            "idExpenditure": idExpenditure,
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.expenses.fetch.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
     loadView(
         url,
         method,
@@ -1147,6 +1227,7 @@ function updateExpenditure(idSession, idExpenditure) {
                 idSession: idSession
             });
 
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idSession').val(data.idSession);
@@ -1154,16 +1235,18 @@ function updateExpenditure(idSession, idExpenditure) {
             $('#amount').val(data.amount);
             $('#description').focus();
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function expenditureSubmit(idSession) {
-    var url = $('#expenses-form').attr("action");
-    var method = $('#expenses-form').attr("method");
-    var form = new FormData(document.getElementById('expenses-form'));
+    var url = $('#expenses-form').attr("action"),
+        method = $('#expenses-form').attr("method"),
+        form = new FormData(document.getElementById('expenses-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
     makeAPIRequest(
         url,
         method,
@@ -1177,13 +1260,18 @@ function expenditureSubmit(idSession) {
             response.json().then(function (data) {
                 // CERRAR EL FORMULARIO
                 $('#forms').html('');
+                if (response.status == 200) {
+                    alert('Gasto actualizado exitosamente.');
+                }
+
+                if (response.status == 201) {
+                    alert('Gasto agregado exitosamente.');
+                }
                 // ACTUALIZAR LA TABLA
                 fetchExpenses(idSession);
             });
         },
-        function (err) {
-            console.log(err)
-        },
+        errorHandler,
         form
     );
 }
@@ -1196,17 +1284,18 @@ function addExpenditure(idSession) {
         //   when the template is loaded.
         load: function (tpl) {
             var url = parseRoute(CONFIG.endpoints.expenses.create.path, {
-                "idSession": idSession
-            });
-            var method = CONFIG.endpoints.expenses.create.method;
-            var output = tpl.render({
-                idSession: idSession,
-                session: null,
-                title: 'Agregar Gasto',
-                action: url,
-                method: method,
-                buttonName: 'Agregar'
-            });
+                    "idSession": idSession
+                }),
+                method = CONFIG.endpoints.expenses.create.method,
+                output = tpl.render({
+                    idSession: idSession,
+                    session: null,
+                    title: 'Agregar Gasto',
+                    action: url,
+                    method: method,
+                    buttonName: 'Agregar'
+                });
+            $('#main').html('');
             $('#forms').html(output);
             $('#idSession').val(idSession);
         }
@@ -1215,10 +1304,13 @@ function addExpenditure(idSession) {
 
 function updateDealerTip(idSession, idDealerTip) {
     var url = parseRoute(CONFIG.endpoints.dealerTips.fetchDealerTip.path, {
-        "idDealerTip": idDealerTip,
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.dealerTips.fetchDealerTip.method;
+            "idDealerTip": idDealerTip,
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.dealerTips.fetchDealerTip.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
 
     loadView(
         url,
@@ -1238,6 +1330,7 @@ function updateDealerTip(idSession, idDealerTip) {
                 idSession: idSession
             });
 
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idSession').val(idSession);
@@ -1245,18 +1338,19 @@ function updateDealerTip(idSession, idDealerTip) {
             $('#dealerTip').val(data.dealerTip);
             $('#dealerTip').focus();
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function updateServiceTip(idSession, idServiceTip) {
     var url = parseRoute(CONFIG.endpoints.serviceTips.fetchServiceTip.path, {
-        "idServiceTip": idServiceTip,
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.serviceTips.fetchServiceTip.method;
+            "idServiceTip": idServiceTip,
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.serviceTips.fetchServiceTip.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
 
     loadView(
         url,
@@ -1276,6 +1370,7 @@ function updateServiceTip(idSession, idServiceTip) {
                 idSession: idSession
             });
 
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idSession').val(idSession);
@@ -1283,17 +1378,18 @@ function updateServiceTip(idSession, idServiceTip) {
             $('#serviceTip').val(data.serviceTip);
             $('#serviceTip').focus();
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function serviceTipSubmit(idSession, form, successCallback, errorCallback) {
     var url = parseRoute(CONFIG.endpoints.serviceTips.create.path, {
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.serviceTips.create.method;
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.serviceTips.create.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
 
     makeAPIRequest(
         url,
@@ -1314,19 +1410,12 @@ function serviceTipSubmit(idSession, form, successCallback, errorCallback) {
 }
 
 function dealerTipSubmit(idSession) {
-    debug('hh');
-
-    var url = $('#tips-form').attr("action");
-    debug(url);
-
-    var method = $('#tips-form').attr("method");
-    debug(method);
-    debug('url y method');
-
-    var form = new FormData(document.getElementById('tips-form'));
-    var errorHandler = function (err) {
-        console.log(err)
-    };
+    var url = $('#tips-form').attr("action"),
+        method = $('#tips-form').attr("method"),
+        form = new FormData(document.getElementById('tips-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
 
     makeAPIRequest(
         url,
@@ -1353,16 +1442,15 @@ function dealerTipSubmit(idSession) {
 }
 
 function tipSubmit(idSession) {
-    var url = $('#tip-form').attr("action");
-    var method = $('#tip-form').attr("method");
-    debug(url);
-    debug(method);
+    var url = $('#tip-form').attr("action"),
+        method = $('#tip-form').attr("method"),
 
-    var form = new FormData(document.getElementById('tip-form'));
-    var errorHandler = function (err) {
-        console.log(err)
-    };
-    debug(url);
+
+        form = new FormData(document.getElementById('tip-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
     makeAPIRequest(
         url,
         method,
@@ -1387,7 +1475,6 @@ function tipSubmit(idSession) {
 }
 
 function addTips(idSession, sessionDate) {
-
     var template = twig({
         href: 'templates/tips-form.twig',
         async: false,
@@ -1395,20 +1482,21 @@ function addTips(idSession, sessionDate) {
         //   when the template is loaded.
         load: function (tpl) {
             var url = parseRoute(CONFIG.endpoints.dealerTips.create.path, {
-                "idSession": idSession
-            });
-            var method = CONFIG.endpoints.dealerTips.create.method;
+                    "idSession": idSession
+                }),
+                method = CONFIG.endpoints.dealerTips.create.method,
 
-            var output = tpl.render({
-                idSession: idSession,
-                sessionDate: sessionDate,
-                session: null,
-                title: 'Agregar Tips',
-                onSubmit: 'dealerTipSubmit',
-                action: url,
-                method: method,
-                buttonName: 'Agregar'
-            });
+                output = tpl.render({
+                    idSession: idSession,
+                    sessionDate: sessionDate,
+                    session: null,
+                    title: 'Agregar Tips',
+                    onSubmit: 'dealerTipSubmit',
+                    action: url,
+                    method: method,
+                    buttonName: 'Agregar'
+                });
+            $('#main').html('');
             $('#forms').html(output);
             $('#idSession').val(idSession);
             $('#hour').val(suggestedDate(sessionDate));
@@ -1422,11 +1510,11 @@ function updateUserSession(button, idSession, idUserSession) {
     }
 
     var url = parseRoute(CONFIG.endpoints.userSession.fetch.path, {
-        "idUserSession": idUserSession,
-        "idSession": idSession
-    });
+            "idUserSession": idUserSession,
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.userSession.fetch.method;
 
-    var method = CONFIG.endpoints.userSession.fetch.method;
     loadView(
         url,
         method,
@@ -1445,6 +1533,7 @@ function updateUserSession(button, idSession, idUserSession) {
             });
 
             debug(data);
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idUser').val(data._embedded.user.id);
@@ -1476,28 +1565,30 @@ function closeUserSession(button, idSession, idUserSession) {
     }
 
     var url = parseRoute(CONFIG.endpoints.userSession.fetch.path, {
-        "idSession": idSession,
-        "idUserSession": idUserSession
-    });
-    var method = CONFIG.endpoints.userSession.fetch.method;
+            "idSession": idSession,
+            "idUserSession": idUserSession
+        }),
+        method = CONFIG.endpoints.userSession.fetch.method;
+
     loadView(
         url,
         method,
         'templates/usersession-form.twig',
         function (template, data) {
             debug(data);
-            var now = getCurrentDate();
-            var output = template.render({
-                userSession: data._embedded.users_session,
-                title: 'Cerrar sessión de usuario',
-                action: parseRoute(CONFIG.endpoints.userSession.closeUserSession.path, {
-                    "idUserSession": idUserSession
-                }),
-                method: CONFIG.endpoints.userSession.closeUserSession.method,
-                buttonName: 'Enviar',
-                idSession: idSession
-            });
+            var now = getCurrentDate(),
+                output = template.render({
+                    userSession: data._embedded.users_session,
+                    title: 'Cerrar sessión de usuario',
+                    action: parseRoute(CONFIG.endpoints.userSession.closeUserSession.path, {
+                        "idUserSession": idUserSession
+                    }),
+                    method: CONFIG.endpoints.userSession.closeUserSession.method,
+                    buttonName: 'Enviar',
+                    idSession: idSession
+                });
 
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idUser').val(data._embedded.user.id);
@@ -1515,12 +1606,13 @@ function closeUserSession(button, idSession, idUserSession) {
 }
 
 function userSessionSubmit(idSession) {
-    var url = $('#usersession-form').attr("action");
-    var method = $('#usersession-form').attr("method");
-    var form = new FormData(document.getElementById('usersession-form'));
-    debug('url y method submit');
-    debug(url);
-    debug(method);
+    var url = $('#usersession-form').attr("action"),
+        method = $('#usersession-form').attr("method"),
+        form = new FormData(document.getElementById('usersession-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
     makeAPIRequest(
         url,
         method,
@@ -1534,14 +1626,20 @@ function userSessionSubmit(idSession) {
             response.json().then(function (data) {
                 // CLOSE FORM
                 $('#forms').html('');
+
+                if (response.status == 200) {
+                    alert('Usuario de sesión actualizado exitosamente.');
+                }
+
+                if (response.status == 201) {
+                    alert('Usuario agregado exitosamente a la sesión.');
+                }
                 // UPDATE TABLE
                 fetchUsersSession(idSession);
                 debug(data);
             });
         },
-        function (err) {
-            console.log(err)
-        },
+        errorHandler,
         form
     );
 }
@@ -1555,24 +1653,25 @@ function addUserSession(idSession) {
         //   when the template is loaded.
         load: function (tpl) {
             var url = parseRoute(CONFIG.endpoints.userSession.create.path, {
-                "idSession": idSession
-            });
-            var output = tpl.render({
-                idSession: idSession,
-                session: null,
-                title: 'Agregar Usuario',
-                action: url,
-                buttonName: 'Agregar'
-            });
+                    "idSession": idSession
+                }),
+                output = tpl.render({
+                    idSession: idSession,
+                    session: null,
+                    title: 'Agregar Usuario',
+                    action: url,
+                    buttonName: 'Agregar'
+                });
 
+            $('#main').html('');
             $('#forms').html(output);
             $('#idSession').val(idSession);
             $('#approved').val(1);
             $('#point').val(0);
-            var url_users = parseRoute(CONFIG.endpoints.users.fetchAll.path, {});
-            var method_fetchAll = CONFIG.endpoints.users.fetchAll.method;
+            var url_users = parseRoute(CONFIG.endpoints.users.fetchAll.path, {}),
+                method_fetchAll = CONFIG.endpoints.users.fetchAll.method,
 
-            var loadUsers = function () {
+             loadUsers = function () {
                 makeAPIRequest(
                     url_users,
                     method_fetchAll,
@@ -1591,7 +1690,7 @@ function addUserSession(idSession) {
                         });
                     },
                     function (err) {
-                        console.log(err)
+                        debug(err)
                     },
                 );
             };
@@ -1602,9 +1701,13 @@ function addUserSession(idSession) {
 
 function updateUser(idUser) {
     var url = parseRoute(CONFIG.endpoints.users.fetch.path, {
-        "idUser": idUser
-    });
-    var method = CONFIG.endpoints.users.fetch.method;
+            "idUser": idUser
+        }),
+        method = CONFIG.endpoints.users.fetch.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
     loadView(
         url,
         method,
@@ -1620,10 +1723,7 @@ function updateUser(idUser) {
                 buttonName: 'Editar'
             });
 
-            debug(parseRoute(CONFIG.endpoints.users.update.path, {
-                "idUser": idUser
-            }));
-            debug(CONFIG.endpoints.users.update.method);
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#lastname').val(data.lastname);
@@ -1640,20 +1740,18 @@ function updateUser(idUser) {
             $('#hours').val(data.hours);
             $('#active').val(data.isActive);
         },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
+        errorHandler
     );
 }
 
 function userSubmit() {
-    var url = $('#users-form').attr("action");
-    var method = $('#users-form').attr("method");
+    var url = $('#users-form').attr("action"),
+        method = $('#users-form').attr("method"),
 
-    var form = new FormData(document.getElementById('users-form'));
-    var errorHandler = function (err) {
-        console.log(err)
-    };
+        form = new FormData(document.getElementById('users-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
 
     makeAPIRequest(
         url,
@@ -1668,6 +1766,13 @@ function userSubmit() {
             response.json().then(function (data) {
                 // CLOSE FORM
                 $('#forms').html('');
+                if (response.status == 200) {
+                    alert('usuario actualizado exitosamente.');
+                }
+
+                if (response.status == 201) {
+                    alert('Usuario agregado exitosamente.');
+                }
                 // UPDATE TABLE
                 fetchUsers();
             });
@@ -1678,21 +1783,21 @@ function userSubmit() {
 }
 
 function addUser() {
-    // refact
     var template = twig({
         href: 'templates/user-form.twig',
         async: false,
         // The default is to load asynchronously, and call the load function
         //   when the template is loaded.
         load: function (tpl) {
-            var url = parseRoute(CONFIG.endpoints.users.create.path, {});
-            var method = CONFIG.endpoints.users.create.method;
-            var output = tpl.render({
-                title: 'Agregar Usuario',
-                action: url,
-                method: method,
-                buttonName: 'Agregar'
-            });
+            var url = parseRoute(CONFIG.endpoints.users.create.path, {}),
+                method = CONFIG.endpoints.users.create.method,
+                output = tpl.render({
+                    title: 'Agregar Usuario',
+                    action: url,
+                    method: method,
+                    buttonName: 'Agregar'
+                });
+            $('#main').html('');
             $('#forms').html(output);
             $('#active').val(1);
             $('#sessions').val(0);
@@ -1706,9 +1811,12 @@ function addUser() {
 
 function playSession(idSession) {
     var url = parseRoute(CONFIG.endpoints.sessions.playSession.path, {
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.sessions.playSession.method;
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.sessions.playSession.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
 
     makeAPIRequest(
         url,
@@ -1720,17 +1828,18 @@ function playSession(idSession) {
             }
             fetchSessions();
         },
-        function (err) {
-            debug(err)
-        }
+        errorHandler
     );
 }
 
 function stopSession(idSession) {
     var url = parseRoute(CONFIG.endpoints.sessions.stopSession.path, {
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.sessions.stopSession.method;
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.sessions.stopSession.method,
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
 
     makeAPIRequest(
         url,
@@ -1742,17 +1851,16 @@ function stopSession(idSession) {
             }
             fetchSessions();
         },
-        function (err) {
-            debug(err)
-        }
+        errorHandler
     );
 }
 
 function updateSession(idSession) {
     var url = parseRoute(CONFIG.endpoints.sessions.fetch.path, {
-        "idSession": idSession
-    });
-    var method = CONFIG.endpoints.sessions.fetch.method;
+            "idSession": idSession
+        }),
+        method = CONFIG.endpoints.sessions.fetch.method;
+
     loadView(
         url,
         method,
@@ -1768,8 +1876,9 @@ function updateSession(idSession) {
                 buttonName: 'Editar',
                 idSession: idSession
             });
-            debug('data para update');
+
             debug(data);
+            $('#main').html('');
             $('#forms').html(output);
             $('#id').val(data.id);
             $('#idSession').val(data.idSession);
@@ -1785,33 +1894,37 @@ function updateSession(idSession) {
             }
             $('#minimum_user_session_minutes').val(data.minimumUserSessionMinutes);
 
-            var url = parseRoute(CONFIG.endpoints.rakebackAlgorithms.fetchAll.path, {});
-            var method = CONFIG.endpoints.rakebackAlgorithms.fetchAll.method;
+            // $('.inactive-data').attr("disabled",true);
+            $(".form :input, .inactive-data :input").attr("disabled","true");
 
-            var loadAlgorithms = function () {
-                makeAPIRequest(
-                    url,
-                    method,
-                    function (response) {
-                        if (response.status !== 200) {
-                            return;
-                        }
+            var url = parseRoute(CONFIG.endpoints.rakebackAlgorithms.fetchAll.path, {}),
+                method = CONFIG.endpoints.rakebackAlgorithms.fetchAll.method,
+                errorHandler = function (err) {
+                    debug('Fetch Error :-S', err)
+                },
 
-                        // Examine the text in the response
-                        response.json().then(function (data) {
-                            debug(data);
-                            Object.values(data.algorithmsNames).forEach(function (item) {
-                                debug(item);
-                                $('#rakeback_class').append('<option value="' + item + '">' + item + '</option>');
+                loadAlgorithms = function () {
+                    makeAPIRequest(
+                        url,
+                        method,
+                        function (response) {
+                            if (response.status !== 200) {
+                                return;
+                            }
+
+                            // Examine the text in the response
+                            response.json().then(function (data) {
+                                debug(data);
+                                Object.values(data.algorithmsNames).forEach(function (item) {
+                                    debug(item);
+                                    $('#rakeback_class').append('<option value="' + item + '">' + item + '</option>');
+                                });
+                                $('#rakeback_namespace').val(data.namespace);
                             });
-                            $('#rakeback_namespace').val(data.namespace);
-                        });
-                    },
-                    function (err) {
-                        console.log(err)
-                    },
-                );
-            };
+                        },
+                        errorHandler,
+                    );
+                };
             loadAlgorithms();
         },
         function (err) {
@@ -1821,12 +1934,13 @@ function updateSession(idSession) {
 }
 
 function sessionSubmit() {
-    var url = $('#sessions-form').attr("action");
-    var method = $('#sessions-form').attr("method");
-    var form = new FormData(document.getElementById('sessions-form'));
-    var errorHandler = function (err) {
-        console.log(err)
-    };
+    var url = $('#sessions-form').attr("action"),
+        method = $('#sessions-form').attr("method"),
+        form = new FormData(document.getElementById('sessions-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
     makeAPIRequest(
         url,
         method,
@@ -1840,6 +1954,13 @@ function sessionSubmit() {
             response.json().then(function (data) {
                 // CLOSE FORM
                 $('#forms').html('');
+                if (response.status == 200) {
+                    alert('Sesión actualizada exitosamente.');
+                }
+
+                if (response.status == 201) {
+                    alert('Sesión agregada exitosamente.');
+                }
                 // UPDATE TABLE
                 fetchSessions();
             });
@@ -1856,47 +1977,50 @@ function addSession() {
         // The default is to load asynchronously, and call the load function
         //   when the template is loaded.
         load: function (tpl) {
-            var now = getCurrentDate();
-            var url = parseRoute(CONFIG.endpoints.sessions.create.path, {});
-            var method = CONFIG.endpoints.sessions.create.method;
-            var output = tpl.render({
-                title: 'Agregar Sesión',
-                action: url,
-                method: method,
-                buttonName: 'Agregar'
-            });
+            var now = getCurrentDate(),
+                url = parseRoute(CONFIG.endpoints.sessions.create.path, {}),
+                method = CONFIG.endpoints.sessions.create.method,
+                output = tpl.render({
+                    title: 'Agregar Sesión',
+                    action: url,
+                    method: method,
+                    buttonName: 'Agregar'
+                });
+            $('#main').html('');
             $('#forms').html(output);
             $('#date').val(now["date"]);
             $('#start_at').val(now["date"] + "T" + now["hour"]);
             $('#minimum_user_session_minutes').val(240);
+            $('#real_hour').addClass('inactive-data');
+            $('#end_session').addClass('inactive-data');
 
-            var url = parseRoute(CONFIG.endpoints.rakebackAlgorithms.fetchAll.path, {});
-            var method = CONFIG.endpoints.rakebackAlgorithms.fetchAll.method;
+            var url_alg = parseRoute(CONFIG.endpoints.rakebackAlgorithms.fetchAll.path, {}),
+                method_alg = CONFIG.endpoints.rakebackAlgorithms.fetchAll.method,
+                errorHandler = function (err) {
+                    debug('Fetch Error :-S', err)
+                },
+                loadAlgorithms = function () {
+                    makeAPIRequest(
+                        url_alg,
+                        method_alg,
+                        function (response) {
+                            if (response.status !== 200) {
+                                return;
+                            }
 
-            var loadAlgorithms = function () {
-                makeAPIRequest(
-                    url,
-                    method,
-                    function (response) {
-                        if (response.status !== 200) {
-                            return;
-                        }
-
-                        // Examine the text in the response
-                        response.json().then(function (data) {
-                            debug(data);
-                            Object.values(data.algorithmsNames).forEach(function (item) {
-                                debug(item);
-                                $('#rakeback_class').append('<option value="' + item + '">' + item + '</option>');
+                            // Examine the text in the response
+                            response.json().then(function (data) {
+                                debug(data);
+                                Object.values(data.algorithmsNames).forEach(function (item) {
+                                    debug(item);
+                                    $('#rakeback_class').append('<option value="' + item + '">' + item + '</option>');
+                                });
+                                $('#rakeback_namespace').val(data.namespace);
                             });
-                            $('#rakeback_namespace').val(data.namespace);
-                        });
-                    },
-                    function (err) {
-                        console.log(err)
-                    },
-                );
-            };
+                        },
+                        errorHandler,
+                    );
+                };
             loadAlgorithms();
         }
     });
@@ -1919,4 +2043,187 @@ function rotationTitle() {
 function rotationSeats() {
     $('.show-column .seats').toggleClass('hide-me');
     $('.show-column .seats-history').toggleClass('hide-me');
+}
+
+function requestStatistics () {
+    var template = twig({
+        href: 'templates/statistics-form.twig',
+        async: false,
+        // The default is to load asynchronously, and call the load function
+        //   when the template is loaded.
+        load: function (tpl) {
+            var output = tpl.render({
+            });
+            $('#main').html('');
+            $('#forms').html(output);
+        }
+    });
+
+}
+
+function fetchCommissionStatistics() {
+
+}
+
+function fetchDealerTipsStatistics() {
+
+}
+
+function fetchServiceTipsStatistics() {
+
+}
+
+
+function statisticsSubmit() {
+
+    var form = new FormData(document.getElementById('statistics-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        },
+
+        // statistics of commissions
+        url = 'http://www.lms-api-2.local/statistics/commissions',
+        method = 'post';
+
+    /*
+    loadView(
+        url,
+        method,
+        'templates/statistics-display.twig',
+        function (template, data) {
+            debug(data);
+            var output = template.render({
+                data: data,
+            });
+
+            debug(data);
+            $('#statistics').html(output);
+        },
+        function (err) {
+            debug('Fetch Error :-S', err);
+        }
+    );*/
+
+
+    makeAPIRequest(
+        url,
+        method,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                // variable: ids foreach data as item, idArray[] = item.id
+                // mismo forach harmo array totals
+
+
+                $('#forms').html('')
+                var ctx = document.getElementById('myChart'),
+                    totals = [],
+                    ids = [];
+                debug(data.data);
+                data.data.forEach(function (item){
+                    totals.push(item.total);
+                    ids.push(item.id);
+                });
+
+                debug(totals); debug(ids);
+
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ids, // TODO ids,
+                        datasets: [{
+                            label: '# of Votes',
+                            data: totals,// TODO totals,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+
+                /*
+                var template = twig({
+                    href: 'templates/statistics-display.twig',
+                    async: false,
+                    // The default is to load asynchronously, and call the load function
+                    //   when the template is loaded.
+                    load: function (tpl) {
+                        var output = tpl.render({
+                            data: data.data
+                        });
+                        $('#forms').html('');
+                        $('#statistics').html(output);
+                        debug(data);
+                    }
+                });
+                */
+                // $('#forms').html('')
+            });
+
+
+
+            // Aca output al widget? con la data de la response
+            // TODO
+        },
+        errorHandler,
+        form
+    );
+
+
+    // statistics of dealerTips
+    /*
+    var url = '/statistics/dealer-tips';
+    var method = 'post';
+
+    makeAPIRequest(
+        url,
+        method,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+        },
+        errorHandler,
+        form
+    );
+    */
 }

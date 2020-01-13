@@ -13,6 +13,7 @@
 	<script src="/js/main.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/twig.js/0.8.9/twig.min.js"></script>
 	<script src="http://momentjs.com/downloads/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 	
 </head>
 
@@ -30,7 +31,7 @@
 			  	<button type="button" onclick="fetchUsers();" id="menuitem-users" class="nav-link btn btn-outline-primary " href="#">Usuarios</button>
 			  </li>
 				<li class="nav-item">
-					<button type="button" onclick="formStats();" id="menuitem-statistics" class="nav-link btn btn-outline-primary " href="#">Estadísticas</button>
+					<button type="button" onclick="requestStatistics();" id="menuitem-statistics" class="nav-link btn btn-outline-primary " href="#">Estadísticas</button>
 				</li>
 
 				<li class="nav-item">
@@ -94,6 +95,16 @@
 
 	<div id="forms" class="card">
 	</div>
+
+	<div id="statistics" class="card">
+		<canvas id="myChart">
+		</canvas>
+	</div>
+
+
+
+
+
 </body>
 
 </html>
