@@ -395,6 +395,10 @@ function deleteSession(idSession) {
             debug(err)
         };
 
+    if (! confirm("¿Está seguro que desea eliminar la sesión?")) {
+        return;
+    }
+
     makeAPIRequest(
         url,
         method,
@@ -1320,7 +1324,7 @@ function updateDealerTip(idSession, idDealerTip) {
             var output = template.render({
                 dealerTip: data.dealerTip,
                 title: 'Editar Dealer Tip',
-                onSubmit: 'tipSubmit',
+                onSubmit: 'dealerTipSubmit',
                 action: parseRoute(CONFIG.endpoints.dealerTips.updateDealerTip.path, {
                     "idDealerTip": idDealerTip,
                     "idSession": idSession
@@ -1360,7 +1364,7 @@ function updateServiceTip(idSession, idServiceTip) {
             var output = template.render({
                 serviceTip: data.serviceTip,
                 title: 'Editar Service Tip',
-                onSubmit: 'tipSubmit',
+                onSubmit: 'serviceTipSubmit',
                 action: parseRoute(CONFIG.endpoints.serviceTips.updateServiceTip.path, {
                     "idServiceTip": idServiceTip,
                     "idSession": idSession
@@ -1382,7 +1386,7 @@ function updateServiceTip(idSession, idServiceTip) {
     );
 }
 
-function serviceTipSubmit(idSession, form, successCallback, errorCallback) {
+function serviceTipSubmitForAdd(idSession, form, successCallback, errorCallback) {
     var url = parseRoute(CONFIG.endpoints.serviceTips.create.path, {
             "idSession": idSession
         }),
@@ -1396,9 +1400,18 @@ function serviceTipSubmit(idSession, form, successCallback, errorCallback) {
         method,
         function (response) {
             if (response.status !== 200 && response.status !== 201) {
+                debug('service ttip no success');
                 errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+
                 return;
             }
+
+            alert('Service tip agregado exitosamente.');
 
             if (successCallback) {
                 successCallback(response);
@@ -1409,7 +1422,7 @@ function serviceTipSubmit(idSession, form, successCallback, errorCallback) {
     );
 }
 
-function dealerTipSubmit(idSession) {
+function dealerTipSubmitForAdd(idSession) {
     var url = $('#tips-form').attr("action"),
         method = $('#tips-form').attr("method"),
         form = new FormData(document.getElementById('tips-form')),
@@ -1423,15 +1436,22 @@ function dealerTipSubmit(idSession) {
         function (response) {
             if (response.status !== 200 && response.status !== 201) {
                 errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+
                 return;
             }
 
-            serviceTipSubmit(idSession, form, response, errorHandler);
+            serviceTipSubmitForAdd(idSession, form, response, errorHandler);
             // Examine the text in the response
             response.json().then(function (data) {
                 // CERRAR EL FORMULARIO
                 $('#forms').html('');
                 // ACTUALIZAR LA TABLA
+                alert('Dealer tip agregado exitosamente.');
                 fetchDealerTips(idSession);
                 debug(data);
             });
@@ -1442,11 +1462,9 @@ function dealerTipSubmit(idSession) {
 }
 
 function tipSubmit(idSession) {
-    var url = $('#tip-form').attr("action"),
-        method = $('#tip-form').attr("method"),
-
-
-        form = new FormData(document.getElementById('tip-form')),
+    var url = $('#tips-form').attr("action"),
+        method = $('#tips-form').attr("method"),
+        form = new FormData(document.getElementById('tips-form')),
         errorHandler = function (err) {
             debug('Fetch Error :-S', err)
         };
@@ -1474,6 +1492,82 @@ function tipSubmit(idSession) {
     );
 }
 
+function dealerTipSubmit(idSession) {
+    var url = $('#dealerTips-form').attr("action"),
+        method = $('#dealerTips-form').attr("method"),
+        form = new FormData(document.getElementById('dealerTips-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
+    makeAPIRequest(
+        url,
+        method,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                // CLOSE FORM
+                $('#forms').html('');
+                // UPDATE TABLE
+                alert('Dealer tip actualizado exitosamente.');
+                fetchDealerTips(idSession);
+                debug(data);
+            });
+        },
+        errorHandler,
+        form
+    );
+}
+
+function serviceTipSubmit(idSession) {
+    var url = $('#serviceTips-form').attr("action"),
+        method = $('#serviceTips-form').attr("method"),
+        form = new FormData(document.getElementById('serviceTips-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
+    makeAPIRequest(
+        url,
+        method,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                // CLOSE FORM
+                $('#forms').html('');
+                // UPDATE TABLE
+                alert('Service tip actualizado exitosamente.');
+                fetchDealerTips(idSession);
+                debug(data);
+            });
+        },
+        errorHandler,
+        form
+    );
+}
+
 function addTips(idSession, sessionDate) {
     var template = twig({
         href: 'templates/tips-form.twig',
@@ -1485,17 +1579,17 @@ function addTips(idSession, sessionDate) {
                     "idSession": idSession
                 }),
                 method = CONFIG.endpoints.dealerTips.create.method,
-
                 output = tpl.render({
                     idSession: idSession,
                     sessionDate: sessionDate,
                     session: null,
                     title: 'Agregar Tips',
-                    onSubmit: 'dealerTipSubmit',
+                    onSubmit: 'dealerTipSubmitForAdd',
                     action: url,
                     method: method,
                     buttonName: 'Agregar'
                 });
+
             $('#main').html('');
             $('#forms').html(output);
             $('#idSession').val(idSession);
@@ -2072,7 +2166,6 @@ function fetchDealerTipsStatistics() {
 function fetchServiceTipsStatistics() {
 
 }
-
 
 function statisticsSubmit() {
 

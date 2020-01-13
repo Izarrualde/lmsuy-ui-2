@@ -32,7 +32,7 @@
                         <td> {{ commission.hour.date|date('H:i') }} </td>
                         <td> {{ commission.commission|number_format(2, ',', '.') }} </td>
                         <td> <a href="#" onclick="updateCommission({{ idSession }}, {{ commission.id }});"> <i class="fas fa-pencil-alt"> </i> </a>
-                             <a href="#" onclick="deleteCommission({{ idSession }}, {{ commission.id }});"> <i class="fas fa-trash-alt"></i> </a>
+                             <a href="#" onclick="deleteCommission({{ idSession }}, {{ commission.id }}); return false;"> <i class="fas fa-trash-alt"></i> </a>
                              </td>
                     </tr>
                     {% set totalCommission = totalCommission + commission.commission %}
