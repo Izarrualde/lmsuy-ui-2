@@ -2185,6 +2185,8 @@ function rotationSeats() {
 }
 
 function requestStatistics () {
+    $('.nav-link.active').removeClass('active');
+    $('#menuitem-statistics').addClass('active');
     var template = twig({
         href: 'templates/statistics-form.twig',
         async: false,
@@ -2194,6 +2196,7 @@ function requestStatistics () {
             var output = tpl.render({
             });
             $('#main').html('');
+            $('#statistics').html('');
             $('#forms').html(output);
         }
     });
@@ -2217,7 +2220,6 @@ function statisticsSubmit() {
         errorHandler = function (err) {
             debug('Fetch Error :-S', err)
         },
-        // statistics of commissions
         urlCommissions = parseRoute(CONFIG.endpoints.statistics.commissions.path, {}),
         methodCommissions = CONFIG.endpoints.statistics.commissions.method,
         urlDealerTips = parseRoute(CONFIG.endpoints.statistics.dealerTips.path, {}),
@@ -2239,24 +2241,8 @@ function statisticsSubmit() {
         urlTipsPerService = parseRoute(CONFIG.endpoints.statistics.tipsPerService.path, {}),
         methodTipsPerService = CONFIG.endpoints.statistics.tipsPerService.method;
 
-    /*
-    loadView(
-        url,
-        method,
-        'templates/statistics-display.twig',
-        function (template, data) {
-            debug(data);
-            var output = template.render({
-                data: data,
-            });
-
-            debug(data);
-            $('#statistics').html(output);
-        },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
-    );*/
+    $('#forms').html('');
+    $('#main').html('');
 
     makeAPIRequest(
         urlCommissions,
@@ -2274,12 +2260,8 @@ function statisticsSubmit() {
 
             // Examine the text in the response
             response.json().then(function (data) {
-                // variable: ids foreach data as item, idArray[] = item.id
-                // mismo forach armo array totals
-
-                $('#forms').html('');
-                $('#main').html('');
-                var ctx = document.getElementById('myChart'),
+                $('#statistics').append("<div class='widget'> <canvas id=\"myChartCommissions\"> </canvas></div>");
+                var ctx = document.getElementById('myChartCommissions'),
                     totals = [],
                     ids = [];
                 debug(data.data);
@@ -2295,7 +2277,7 @@ function statisticsSubmit() {
                     data: {
                         labels: ids,
                         datasets: [{
-                            label: '# of Votes',
+                            label: '# commissions',
                             data: totals,
                             backgroundColor: [
                                 'rgba(255, 99, 132, 0.2)',
@@ -2326,44 +2308,15 @@ function statisticsSubmit() {
                         }
                     }
                 });
-
-                /*
-                var template = twig({
-                    href: 'templates/statistics-display.twig',
-                    async: false,
-                    // The default is to load asynchronously, and call the load function
-                    //   when the template is loaded.
-                    load: function (tpl) {
-                        var output = tpl.render({
-                            data: data.data
-                        });
-                        $('#forms').html('');
-                        $('#statistics').html(output);
-                        debug(data);
-                    }
-                });
-                */
-                // $('#forms').html('')
             });
-
-
-
-            // Aca output al widget? con la data de la response
-            // TODO
         },
         errorHandler,
         form
     );
 
-
-    // statistics of dealerTips
-    /*
-    var url = '/statistics/dealer-tips';
-    var method = 'post';
-
     makeAPIRequest(
-        url,
-        method,
+        urlDealerTips,
+        methodDealerTips,
         function (response) {
             if (response.status !== 200 && response.status !== 201) {
                 errorHandler(response);
@@ -2374,9 +2327,270 @@ function statisticsSubmit() {
                 });
                 return;
             }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                $('#statistics').append("<div class='widget'> <canvas id=\"myChartDealerTips\"> </canvas></div>");
+                var ctx = document.getElementById('myChartDealerTips'),
+                    totals = [],
+                    ids = [];
+                debug(data.data);
+                data.data.forEach(function (item) {
+                    totals.push(item.total);
+                    ids.push(item.id);
+                });
+
+                debug(totals); debug(ids);
+
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ids,
+                        datasets: [{
+                            label: '# DealerTips',
+                            data: totals,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
         },
         errorHandler,
         form
     );
-    */
+
+    makeAPIRequest(
+        urlServiceTips,
+        methodServiceTips,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                $('#statistics').append("<div class='widget'> <canvas id=\"myChartServiceTips\"> </canvas></div>");
+                var ctx = document.getElementById('myChartServiceTips'),
+                    totals = [],
+                    ids = [];
+                debug(data.data);
+                data.data.forEach(function (item) {
+                    totals.push(item.total);
+                    ids.push(item.id);
+                });
+
+                debug(totals); debug(ids);
+
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ids,
+                        datasets: [{
+                            label: '# ServiceTips',
+                            data: totals,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+        },
+        errorHandler,
+        form
+    );
+
+    makeAPIRequest(
+        urlExpenses,
+        methodExpenses,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                $('#statistics').append("<div class='widget'> <canvas id=\"myChartExpenses\"> </canvas></div>");
+                var ctx = document.getElementById('myChartExpenses'),
+                    totals = [],
+                    ids = [];
+                debug(data.data);
+                data.data.forEach(function (item) {
+                    totals.push(item.total);
+                    ids.push(item.id);
+                });
+
+                debug(totals); debug(ids);
+
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ids,
+                        datasets: [{
+                            label: '# Expenses',
+                            data: totals,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+        },
+        errorHandler,
+        form
+    );
+
+    makeAPIRequest(
+        urlTotalCashin,
+        methodTotalCashin,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                $('#statistics').append("<div class='widget'> <canvas id=\"myChartTotalCashin\"> </canvas></div>");
+                var ctx = document.getElementById('myChartTotalCashin'),
+                    totals = [],
+                    ids = [];
+                debug(data.data);
+                data.data.forEach(function (item) {
+                    totals.push(item.total);
+                    ids.push(item.id);
+                });
+
+                debug(totals); debug(ids);
+
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ids,
+                        datasets: [{
+                            label: '# Total cashin',
+                            data: totals,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+        },
+        errorHandler,
+        form
+    );
 }
