@@ -208,6 +208,48 @@ const CONFIG = {
                 path: '/sessions/:idSession/buyins/:idBuyin'
             }
         },
+        statistics: {
+            commissions: {
+                method: 'post',
+                path: '/statistics/commissions'
+            },
+            dealerTips: {
+                method: 'post',
+                path: '/statistics/dealer-tips'
+            },
+            serviceTips: {
+                method: 'post',
+                path: '/statistics/service-tips'
+            },
+            expenses: {
+                method: 'post',
+                path: '/statistics/expenses'
+            },
+            totalCashin: {
+                method: 'post',
+                path: '/statistics/total-cashin'
+            },
+            hoursPlayed: {
+                method: 'post',
+                path: '/statistics/hours-played'
+            },
+            players: {
+                method: 'post',
+                path: '/statistics/players'
+            },
+            rakeRace: {
+                method: 'post',
+                path: '/statistics/rake-race'
+            },
+            tipsPerDealer: {
+                method: 'post',
+                path: '/statistics/tips-per-dealer'
+            },
+            tipsPerService: {
+                method: 'post',
+                path: '/statistics/tips-per-service'
+            }
+        }
     }
 };
 
@@ -364,6 +406,7 @@ function fetchSessions() {
     $('.nav-link.active').removeClass('active');
     $('#menuitem-sessions').addClass('active');
     $('#forms').html('');
+    $('#statistics').html('');
 
     var url = parseRoute(CONFIG.endpoints.sessions.fetchAll.path, {}),
         method = CONFIG.endpoints.sessions.fetchAll.method,
@@ -478,6 +521,8 @@ function fetchUsers() {
     $('.nav-link.active').removeClass('active');
     $('#menuitem-users').addClass('active');
     $('#forms').html('');
+    $('#statistics').html('');
+
     var url = parseRoute(CONFIG.endpoints.users.fetchAll.path, {}),
         method = CONFIG.endpoints.users.fetchAll.method,
         errorHandler = function (err) {
@@ -2168,15 +2213,31 @@ function fetchServiceTipsStatistics() {
 }
 
 function statisticsSubmit() {
-
-    var form = new FormData(document.getElementById('statistics-form')),
+      var form = new FormData(document.getElementById('statistics-form')),
         errorHandler = function (err) {
             debug('Fetch Error :-S', err)
         },
-
         // statistics of commissions
-        url = 'http://www.lms-api-2.local/statistics/commissions',
-        method = 'post';
+        urlCommissions = parseRoute(CONFIG.endpoints.statistics.commissions.path, {}),
+        methodCommissions = CONFIG.endpoints.statistics.commissions.method,
+        urlDealerTips = parseRoute(CONFIG.endpoints.statistics.dealerTips.path, {}),
+        methodDealerTips = CONFIG.endpoints.statistics.dealerTips.method,
+        urlServiceTips = parseRoute(CONFIG.endpoints.statistics.serviceTips.path, {}),
+        methodServiceTips = CONFIG.endpoints.statistics.serviceTips.method,
+        urlExpenses = parseRoute(CONFIG.endpoints.statistics.expenses.path, {}),
+        methodExpenses = CONFIG.endpoints.statistics.expenses.method,
+        urlTotalCashin = parseRoute(CONFIG.endpoints.statistics.totalCashin.path, {}),
+        methodTotalCashin = CONFIG.endpoints.statistics.totalCashin.method,
+        urlHoursPlayed = parseRoute(CONFIG.endpoints.statistics.hoursPlayed.path, {}),
+        methodHoursPlayed = CONFIG.endpoints.statistics.hoursPlayed.method,
+        urlPlayers = parseRoute(CONFIG.endpoints.statistics.players.path, {}),
+        methodPlayers = CONFIG.endpoints.statistics.players.method,
+        urlRakeRace = parseRoute(CONFIG.endpoints.statistics.rakeRace.path, {}),
+        methodRakeRace = CONFIG.endpoints.statistics.rakeRace.method,
+        urlTipsPerDealer = parseRoute(CONFIG.endpoints.statistics.tipsPerDealer.path, {}),
+        methodTipsPearDealer = CONFIG.endpoints.statistics.tipsPerDealer.method,
+        urlTipsPerService = parseRoute(CONFIG.endpoints.statistics.tipsPerService.path, {}),
+        methodTipsPerService = CONFIG.endpoints.statistics.tipsPerService.method;
 
     /*
     loadView(
@@ -2197,10 +2258,9 @@ function statisticsSubmit() {
         }
     );*/
 
-
     makeAPIRequest(
-        url,
-        method,
+        urlCommissions,
+        methodCommissions,
         function (response) {
             if (response.status !== 200 && response.status !== 201) {
                 errorHandler(response);
@@ -2215,15 +2275,15 @@ function statisticsSubmit() {
             // Examine the text in the response
             response.json().then(function (data) {
                 // variable: ids foreach data as item, idArray[] = item.id
-                // mismo forach harmo array totals
+                // mismo forach armo array totals
 
-
-                $('#forms').html('')
+                $('#forms').html('');
+                $('#main').html('');
                 var ctx = document.getElementById('myChart'),
                     totals = [],
                     ids = [];
                 debug(data.data);
-                data.data.forEach(function (item){
+                data.data.forEach(function (item) {
                     totals.push(item.total);
                     ids.push(item.id);
                 });
@@ -2233,10 +2293,10 @@ function statisticsSubmit() {
                 var myChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ids, // TODO ids,
+                        labels: ids,
                         datasets: [{
                             label: '# of Votes',
-                            data: totals,// TODO totals,
+                            data: totals,
                             backgroundColor: [
                                 'rgba(255, 99, 132, 0.2)',
                                 'rgba(54, 162, 235, 0.2)',
