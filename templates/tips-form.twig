@@ -7,7 +7,7 @@
             <div class="card-body">
                 <section class="container row justify-content-center">
                     <article>
-                        <form class="was-validated" id="tips-form" onsubmit="tipsSubmit({{ idSession }}); return false;" action="{{ action }}" method="post">
+                        <form class="was-validated" id="tips-form" onsubmit="{{ onSubmit }}({{ idSession }}); return false;" action="{{ action }}" method="{{ method }}">
 
                             <input type="hidden" class="form-control" name="idSession" id="idSession" type="text" placeholder="IdSession" required="true">
 

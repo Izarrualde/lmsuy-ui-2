@@ -72,6 +72,18 @@ form.active-player .inactive-data {
     display: none;
 }
 
+.bgStatistics {
+    overflow:hidden;
+    text-align: center;
+    margin:auto;
+}
+
+.widget {
+    border:10px solid #ccc;
+    padding:15px;
+    margin:3px;
+}
+
 /*
 .to-corner {
     position: absolute,

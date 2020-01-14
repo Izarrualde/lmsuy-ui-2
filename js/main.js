@@ -208,6 +208,48 @@ const CONFIG = {
                 path: '/sessions/:idSession/buyins/:idBuyin'
             }
         },
+        statistics: {
+            commissions: {
+                method: 'post',
+                path: '/statistics/commissions'
+            },
+            dealerTips: {
+                method: 'post',
+                path: '/statistics/dealer-tips'
+            },
+            serviceTips: {
+                method: 'post',
+                path: '/statistics/service-tips'
+            },
+            expenses: {
+                method: 'post',
+                path: '/statistics/expenses'
+            },
+            totalCashin: {
+                method: 'post',
+                path: '/statistics/total-cashin'
+            },
+            hoursPlayed: {
+                method: 'post',
+                path: '/statistics/hours-played'
+            },
+            players: {
+                method: 'post',
+                path: '/statistics/players'
+            },
+            rakeRace: {
+                method: 'post',
+                path: '/statistics/rake-race'
+            },
+            tipsPerDealer: {
+                method: 'post',
+                path: '/statistics/tips-per-dealer'
+            },
+            tipsPerService: {
+                method: 'post',
+                path: '/statistics/tips-per-service'
+            }
+        }
     }
 };
 
@@ -364,6 +406,7 @@ function fetchSessions() {
     $('.nav-link.active').removeClass('active');
     $('#menuitem-sessions').addClass('active');
     $('#forms').html('');
+    $('#statistics').html('');
 
     var url = parseRoute(CONFIG.endpoints.sessions.fetchAll.path, {}),
         method = CONFIG.endpoints.sessions.fetchAll.method,
@@ -394,6 +437,10 @@ function deleteSession(idSession) {
         errorHandler = function (err) {
             debug(err)
         };
+
+    if (! confirm("¿Está seguro que desea eliminar la sesión?")) {
+        return;
+    }
 
     makeAPIRequest(
         url,
@@ -474,6 +521,8 @@ function fetchUsers() {
     $('.nav-link.active').removeClass('active');
     $('#menuitem-users').addClass('active');
     $('#forms').html('');
+    $('#statistics').html('');
+
     var url = parseRoute(CONFIG.endpoints.users.fetchAll.path, {}),
         method = CONFIG.endpoints.users.fetchAll.method,
         errorHandler = function (err) {
@@ -1320,7 +1369,7 @@ function updateDealerTip(idSession, idDealerTip) {
             var output = template.render({
                 dealerTip: data.dealerTip,
                 title: 'Editar Dealer Tip',
-                onSubmit: 'tipSubmit',
+                onSubmit: 'dealerTipSubmit',
                 action: parseRoute(CONFIG.endpoints.dealerTips.updateDealerTip.path, {
                     "idDealerTip": idDealerTip,
                     "idSession": idSession
@@ -1360,7 +1409,7 @@ function updateServiceTip(idSession, idServiceTip) {
             var output = template.render({
                 serviceTip: data.serviceTip,
                 title: 'Editar Service Tip',
-                onSubmit: 'tipSubmit',
+                onSubmit: 'serviceTipSubmit',
                 action: parseRoute(CONFIG.endpoints.serviceTips.updateServiceTip.path, {
                     "idServiceTip": idServiceTip,
                     "idSession": idSession
@@ -1382,7 +1431,7 @@ function updateServiceTip(idSession, idServiceTip) {
     );
 }
 
-function serviceTipSubmit(idSession, form, successCallback, errorCallback) {
+function serviceTipSubmitForAdd(idSession, form, successCallback, errorCallback) {
     var url = parseRoute(CONFIG.endpoints.serviceTips.create.path, {
             "idSession": idSession
         }),
@@ -1396,9 +1445,18 @@ function serviceTipSubmit(idSession, form, successCallback, errorCallback) {
         method,
         function (response) {
             if (response.status !== 200 && response.status !== 201) {
+                debug('service ttip no success');
                 errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+
                 return;
             }
+
+            alert('Service tip agregado exitosamente.');
 
             if (successCallback) {
                 successCallback(response);
@@ -1409,7 +1467,7 @@ function serviceTipSubmit(idSession, form, successCallback, errorCallback) {
     );
 }
 
-function dealerTipSubmit(idSession) {
+function dealerTipSubmitForAdd(idSession) {
     var url = $('#tips-form').attr("action"),
         method = $('#tips-form').attr("method"),
         form = new FormData(document.getElementById('tips-form')),
@@ -1423,15 +1481,22 @@ function dealerTipSubmit(idSession) {
         function (response) {
             if (response.status !== 200 && response.status !== 201) {
                 errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+
                 return;
             }
 
-            serviceTipSubmit(idSession, form, response, errorHandler);
+            serviceTipSubmitForAdd(idSession, form, response, errorHandler);
             // Examine the text in the response
             response.json().then(function (data) {
                 // CERRAR EL FORMULARIO
                 $('#forms').html('');
                 // ACTUALIZAR LA TABLA
+                alert('Dealer tip agregado exitosamente.');
                 fetchDealerTips(idSession);
                 debug(data);
             });
@@ -1442,11 +1507,9 @@ function dealerTipSubmit(idSession) {
 }
 
 function tipSubmit(idSession) {
-    var url = $('#tip-form').attr("action"),
-        method = $('#tip-form').attr("method"),
-
-
-        form = new FormData(document.getElementById('tip-form')),
+    var url = $('#tips-form').attr("action"),
+        method = $('#tips-form').attr("method"),
+        form = new FormData(document.getElementById('tips-form')),
         errorHandler = function (err) {
             debug('Fetch Error :-S', err)
         };
@@ -1474,6 +1537,82 @@ function tipSubmit(idSession) {
     );
 }
 
+function dealerTipSubmit(idSession) {
+    var url = $('#dealerTips-form').attr("action"),
+        method = $('#dealerTips-form').attr("method"),
+        form = new FormData(document.getElementById('dealerTips-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
+    makeAPIRequest(
+        url,
+        method,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                // CLOSE FORM
+                $('#forms').html('');
+                // UPDATE TABLE
+                alert('Dealer tip actualizado exitosamente.');
+                fetchDealerTips(idSession);
+                debug(data);
+            });
+        },
+        errorHandler,
+        form
+    );
+}
+
+function serviceTipSubmit(idSession) {
+    var url = $('#serviceTips-form').attr("action"),
+        method = $('#serviceTips-form').attr("method"),
+        form = new FormData(document.getElementById('serviceTips-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        };
+
+    makeAPIRequest(
+        url,
+        method,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                // CLOSE FORM
+                $('#forms').html('');
+                // UPDATE TABLE
+                alert('Service tip actualizado exitosamente.');
+                fetchDealerTips(idSession);
+                debug(data);
+            });
+        },
+        errorHandler,
+        form
+    );
+}
+
 function addTips(idSession, sessionDate) {
     var template = twig({
         href: 'templates/tips-form.twig',
@@ -1485,17 +1624,17 @@ function addTips(idSession, sessionDate) {
                     "idSession": idSession
                 }),
                 method = CONFIG.endpoints.dealerTips.create.method,
-
                 output = tpl.render({
                     idSession: idSession,
                     sessionDate: sessionDate,
                     session: null,
                     title: 'Agregar Tips',
-                    onSubmit: 'dealerTipSubmit',
+                    onSubmit: 'dealerTipSubmitForAdd',
                     action: url,
                     method: method,
                     buttonName: 'Agregar'
                 });
+
             $('#main').html('');
             $('#forms').html(output);
             $('#idSession').val(idSession);
@@ -2046,6 +2185,8 @@ function rotationSeats() {
 }
 
 function requestStatistics () {
+    $('.nav-link.active').removeClass('active');
+    $('#menuitem-statistics').addClass('active');
     var template = twig({
         href: 'templates/statistics-form.twig',
         async: false,
@@ -2055,6 +2196,7 @@ function requestStatistics () {
             var output = tpl.render({
             });
             $('#main').html('');
+            $('#statistics').html('');
             $('#forms').html(output);
         }
     });
@@ -2073,41 +2215,38 @@ function fetchServiceTipsStatistics() {
 
 }
 
-
 function statisticsSubmit() {
-
-    var form = new FormData(document.getElementById('statistics-form')),
+      var form = new FormData(document.getElementById('statistics-form')),
         errorHandler = function (err) {
             debug('Fetch Error :-S', err)
         },
+        urlCommissions = parseRoute(CONFIG.endpoints.statistics.commissions.path, {}),
+        methodCommissions = CONFIG.endpoints.statistics.commissions.method,
+        urlDealerTips = parseRoute(CONFIG.endpoints.statistics.dealerTips.path, {}),
+        methodDealerTips = CONFIG.endpoints.statistics.dealerTips.method,
+        urlServiceTips = parseRoute(CONFIG.endpoints.statistics.serviceTips.path, {}),
+        methodServiceTips = CONFIG.endpoints.statistics.serviceTips.method,
+        urlExpenses = parseRoute(CONFIG.endpoints.statistics.expenses.path, {}),
+        methodExpenses = CONFIG.endpoints.statistics.expenses.method,
+        urlTotalCashin = parseRoute(CONFIG.endpoints.statistics.totalCashin.path, {}),
+        methodTotalCashin = CONFIG.endpoints.statistics.totalCashin.method,
+        urlHoursPlayed = parseRoute(CONFIG.endpoints.statistics.hoursPlayed.path, {}),
+        methodHoursPlayed = CONFIG.endpoints.statistics.hoursPlayed.method,
+        urlPlayers = parseRoute(CONFIG.endpoints.statistics.players.path, {}),
+        methodPlayers = CONFIG.endpoints.statistics.players.method,
+        urlRakeRace = parseRoute(CONFIG.endpoints.statistics.rakeRace.path, {}),
+        methodRakeRace = CONFIG.endpoints.statistics.rakeRace.method,
+        urlTipsPerDealer = parseRoute(CONFIG.endpoints.statistics.tipsPerDealer.path, {}),
+        methodTipsPearDealer = CONFIG.endpoints.statistics.tipsPerDealer.method,
+        urlTipsPerService = parseRoute(CONFIG.endpoints.statistics.tipsPerService.path, {}),
+        methodTipsPerService = CONFIG.endpoints.statistics.tipsPerService.method;
 
-        // statistics of commissions
-        url = 'http://www.lms-api-2.local/statistics/commissions',
-        method = 'post';
-
-    /*
-    loadView(
-        url,
-        method,
-        'templates/statistics-display.twig',
-        function (template, data) {
-            debug(data);
-            var output = template.render({
-                data: data,
-            });
-
-            debug(data);
-            $('#statistics').html(output);
-        },
-        function (err) {
-            debug('Fetch Error :-S', err);
-        }
-    );*/
-
+    $('#forms').html('');
+    $('#main').html('');
 
     makeAPIRequest(
-        url,
-        method,
+        urlCommissions,
+        methodCommissions,
         function (response) {
             if (response.status !== 200 && response.status !== 201) {
                 errorHandler(response);
@@ -2121,16 +2260,12 @@ function statisticsSubmit() {
 
             // Examine the text in the response
             response.json().then(function (data) {
-                // variable: ids foreach data as item, idArray[] = item.id
-                // mismo forach harmo array totals
-
-
-                $('#forms').html('')
-                var ctx = document.getElementById('myChart'),
+                $('#statistics').append("<div class='widget'> <canvas id=\"myChartCommissions\"> </canvas></div>");
+                var ctx = document.getElementById('myChartCommissions'),
                     totals = [],
                     ids = [];
                 debug(data.data);
-                data.data.forEach(function (item){
+                data.data.forEach(function (item) {
                     totals.push(item.total);
                     ids.push(item.id);
                 });
@@ -2140,10 +2275,10 @@ function statisticsSubmit() {
                 var myChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ids, // TODO ids,
+                        labels: ids,
                         datasets: [{
-                            label: '# of Votes',
-                            data: totals,// TODO totals,
+                            label: '# commissions',
+                            data: totals,
                             backgroundColor: [
                                 'rgba(255, 99, 132, 0.2)',
                                 'rgba(54, 162, 235, 0.2)',
@@ -2173,44 +2308,15 @@ function statisticsSubmit() {
                         }
                     }
                 });
-
-                /*
-                var template = twig({
-                    href: 'templates/statistics-display.twig',
-                    async: false,
-                    // The default is to load asynchronously, and call the load function
-                    //   when the template is loaded.
-                    load: function (tpl) {
-                        var output = tpl.render({
-                            data: data.data
-                        });
-                        $('#forms').html('');
-                        $('#statistics').html(output);
-                        debug(data);
-                    }
-                });
-                */
-                // $('#forms').html('')
             });
-
-
-
-            // Aca output al widget? con la data de la response
-            // TODO
         },
         errorHandler,
         form
     );
 
-
-    // statistics of dealerTips
-    /*
-    var url = '/statistics/dealer-tips';
-    var method = 'post';
-
     makeAPIRequest(
-        url,
-        method,
+        urlDealerTips,
+        methodDealerTips,
         function (response) {
             if (response.status !== 200 && response.status !== 201) {
                 errorHandler(response);
@@ -2221,9 +2327,270 @@ function statisticsSubmit() {
                 });
                 return;
             }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                $('#statistics').append("<div class='widget'> <canvas id=\"myChartDealerTips\"> </canvas></div>");
+                var ctx = document.getElementById('myChartDealerTips'),
+                    totals = [],
+                    ids = [];
+                debug(data.data);
+                data.data.forEach(function (item) {
+                    totals.push(item.total);
+                    ids.push(item.id);
+                });
+
+                debug(totals); debug(ids);
+
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ids,
+                        datasets: [{
+                            label: '# DealerTips',
+                            data: totals,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
         },
         errorHandler,
         form
     );
-    */
+
+    makeAPIRequest(
+        urlServiceTips,
+        methodServiceTips,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                $('#statistics').append("<div class='widget'> <canvas id=\"myChartServiceTips\"> </canvas></div>");
+                var ctx = document.getElementById('myChartServiceTips'),
+                    totals = [],
+                    ids = [];
+                debug(data.data);
+                data.data.forEach(function (item) {
+                    totals.push(item.total);
+                    ids.push(item.id);
+                });
+
+                debug(totals); debug(ids);
+
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ids,
+                        datasets: [{
+                            label: '# ServiceTips',
+                            data: totals,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+        },
+        errorHandler,
+        form
+    );
+
+    makeAPIRequest(
+        urlExpenses,
+        methodExpenses,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                $('#statistics').append("<div class='widget'> <canvas id=\"myChartExpenses\"> </canvas></div>");
+                var ctx = document.getElementById('myChartExpenses'),
+                    totals = [],
+                    ids = [];
+                debug(data.data);
+                data.data.forEach(function (item) {
+                    totals.push(item.total);
+                    ids.push(item.id);
+                });
+
+                debug(totals); debug(ids);
+
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ids,
+                        datasets: [{
+                            label: '# Expenses',
+                            data: totals,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+        },
+        errorHandler,
+        form
+    );
+
+    makeAPIRequest(
+        urlTotalCashin,
+        methodTotalCashin,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                $('#statistics').append("<div class='widget'> <canvas id=\"myChartTotalCashin\"> </canvas></div>");
+                var ctx = document.getElementById('myChartTotalCashin'),
+                    totals = [],
+                    ids = [];
+                debug(data.data);
+                data.data.forEach(function (item) {
+                    totals.push(item.total);
+                    ids.push(item.id);
+                });
+
+                debug(totals); debug(ids);
+
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ids,
+                        datasets: [{
+                            label: '# Total cashin',
+                            data: totals,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+        },
+        errorHandler,
+        form
+    );
 }
