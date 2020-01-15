@@ -2215,38 +2215,176 @@ function fetchServiceTipsStatistics() {
 
 }
 
-function statisticsSubmit() {
-      var form = new FormData(document.getElementById('statistics-form')),
-        errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+function generateDataOfPeriod(start, end) {
+    // generate initialized data
+    const dateStart = moment(start);
+    const dateEnd = moment(end);
+    const years = {};
+
+    for (var i = dateStart; i <= dateEnd; i.add(1, 'month') ) {
+        if (! years.hasOwnProperty(i.format('YYYY'))) {
+            years[i.format('YYYY')] = {};
+        }
+
+        years[i.format('YYYY')][i.format('MMMM')] = 0;
+    }
+
+    return years;
+}
+
+function commissionByMonth(data) {
+    var list = generateDataOfPeriod(data.interval.from, data.interval.end);
+
+    // loadDataOfPeriod
+    data.data.forEach(function (item) {
+        debug(item.total);
+        list[moment(item.startTimeReal.date).format('YYYY')][moment(item.startTimeReal.date).format('MMMM')] += parseFloat(item.total);
+    });
+    debug('list'); debug(list);
+
+    // render graphic
+    $('#commissionsDiv').html('');
+
+    statisticsResponse = data;
+
+    $('#commissionsDiv').append("<canvas id='myChartCommissions'></canvas> <button>n/a</button>");
+    var ctx = document.getElementById('myChartCommissions'),
+        totals = [],
+        months = [];
+
+    for (var year in list) {
+        if (list.hasOwnProperty(year)) {
+            debug(year);
+            for (var month in list[year]) {
+                if (list[year].hasOwnProperty(month)) {
+                    debug(month);
+                    totals.push(list[year][month]);
+                    months.push(month+ '-' + year);
+                }
+            }
+        }
+    }
+
+    debug(totals); debug(months);
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: '# commissionsByMonth',
+                data: totals,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 3
+            }]
         },
-        urlCommissions = parseRoute(CONFIG.endpoints.statistics.commissions.path, {}),
-        methodCommissions = CONFIG.endpoints.statistics.commissions.method,
-        urlDealerTips = parseRoute(CONFIG.endpoints.statistics.dealerTips.path, {}),
-        methodDealerTips = CONFIG.endpoints.statistics.dealerTips.method,
-        urlServiceTips = parseRoute(CONFIG.endpoints.statistics.serviceTips.path, {}),
-        methodServiceTips = CONFIG.endpoints.statistics.serviceTips.method,
-        urlExpenses = parseRoute(CONFIG.endpoints.statistics.expenses.path, {}),
-        methodExpenses = CONFIG.endpoints.statistics.expenses.method,
-        urlTotalCashin = parseRoute(CONFIG.endpoints.statistics.totalCashin.path, {}),
-        methodTotalCashin = CONFIG.endpoints.statistics.totalCashin.method,
-        urlHoursPlayed = parseRoute(CONFIG.endpoints.statistics.hoursPlayed.path, {}),
-        methodHoursPlayed = CONFIG.endpoints.statistics.hoursPlayed.method,
-        urlPlayers = parseRoute(CONFIG.endpoints.statistics.players.path, {}),
-        methodPlayers = CONFIG.endpoints.statistics.players.method,
-        urlRakeRace = parseRoute(CONFIG.endpoints.statistics.rakeRace.path, {}),
-        methodRakeRace = CONFIG.endpoints.statistics.rakeRace.method,
-        urlTipsPerDealer = parseRoute(CONFIG.endpoints.statistics.tipsPerDealer.path, {}),
-        methodTipsPearDealer = CONFIG.endpoints.statistics.tipsPerDealer.method,
-        urlTipsPerService = parseRoute(CONFIG.endpoints.statistics.tipsPerService.path, {}),
-        methodTipsPerService = CONFIG.endpoints.statistics.tipsPerService.method;
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
 
-    $('#forms').html('');
-    $('#main').html('');
+function dealerTipsByMonth(data) {
+    debug(data);
+    var list = generateDataOfPeriod(data.interval.from, data.interval.end);
 
+    // loadDataOfPeriod
+    data.data.forEach(function (item) {
+        debug(item.total);
+        list[moment(item.startTimeReal.date).format('YYYY')][moment(item.startTimeReal.date).format('MMMM')] += parseFloat(item.total);
+    });
+    debug('list'); debug(list);
+
+    // render graphic
+    $('#dealerTipsDiv').html('');
+
+    statisticsResponse = data;
+
+    $('#dealerTipsDiv').append("<canvas id='myChartDealerTips'></canvas> <button>n/a</button>");
+    var ctx = document.getElementById('myChartDealerTips'),
+        totals = [],
+        months = [];
+
+    for (var year in list) {
+        if (list.hasOwnProperty(year)) {
+            debug(year);
+            for (var month in list[year]) {
+                if (list[year].hasOwnProperty(month)) {
+                    debug(month);
+                    totals.push(list[year][month]);
+                    months.push(month+ '-' + year);
+                }
+            }
+        }
+    }
+
+    debug(totals); debug(months);
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: '# dealerTipsByMonth',
+                data: totals,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+
+var statisticsResponse = {};
+
+function loadCommissionsGraph(url, method, form, errorHandler) {
     makeAPIRequest(
-        urlCommissions,
-        methodCommissions,
+        url,
+        method,
         function (response) {
             if (response.status !== 200 && response.status !== 201) {
                 errorHandler(response);
@@ -2260,7 +2398,9 @@ function statisticsSubmit() {
 
             // Examine the text in the response
             response.json().then(function (data) {
-                $('#statistics').append("<div class='widget'> <canvas id=\"myChartCommissions\"> </canvas></div>");
+                statisticsResponse.data = data.data;
+
+                $('#statistics').append("<div class='widget' id='commissionsDiv'> <canvas id='myChartCommissions'> </canvas> <button onclick='commissionByMonth(statisticsResponse)'>byMonth</button></div>");
                 var ctx = document.getElementById('myChartCommissions'),
                     totals = [],
                     ids = [];
@@ -2295,7 +2435,7 @@ function statisticsSubmit() {
                                 'rgba(153, 102, 255, 1)',
                                 'rgba(255, 159, 64, 1)'
                             ],
-                            borderWidth: 1
+                            borderWidth: 3
                         }]
                     },
                     options: {
@@ -2313,10 +2453,12 @@ function statisticsSubmit() {
         errorHandler,
         form
     );
+}
 
+function loadDealerTipsGraph (url, method, form, errorHandler) {
     makeAPIRequest(
-        urlDealerTips,
-        methodDealerTips,
+        url,
+        method,
         function (response) {
             if (response.status !== 200 && response.status !== 201) {
                 errorHandler(response);
@@ -2330,7 +2472,8 @@ function statisticsSubmit() {
 
             // Examine the text in the response
             response.json().then(function (data) {
-                $('#statistics').append("<div class='widget'> <canvas id=\"myChartDealerTips\"> </canvas></div>");
+                statisticsResponse.data = data.data;
+                $('#statistics').append("<div class='widget' id='dealerTipsDiv'> <canvas id=\"myChartDealerTips\"> </canvas><button onclick='dealerTipsByMonth(statisticsResponse)'>byMonth</button></div>");
                 var ctx = document.getElementById('myChartDealerTips'),
                     totals = [],
                     ids = [];
@@ -2365,7 +2508,7 @@ function statisticsSubmit() {
                                 'rgba(153, 102, 255, 1)',
                                 'rgba(255, 159, 64, 1)'
                             ],
-                            borderWidth: 1
+                            borderWidth: 3
                         }]
                     },
                     options: {
@@ -2383,7 +2526,49 @@ function statisticsSubmit() {
         errorHandler,
         form
     );
+}
 
+function statisticsSubmit() {
+      var form = new FormData(document.getElementById('statistics-form')),
+        errorHandler = function (err) {
+            debug('Fetch Error :-S', err)
+        },
+        urlCommissions = parseRoute(CONFIG.endpoints.statistics.commissions.path, {}),
+        methodCommissions = CONFIG.endpoints.statistics.commissions.method,
+        urlDealerTips = parseRoute(CONFIG.endpoints.statistics.dealerTips.path, {}),
+        methodDealerTips = CONFIG.endpoints.statistics.dealerTips.method,
+        urlServiceTips = parseRoute(CONFIG.endpoints.statistics.serviceTips.path, {}),
+        methodServiceTips = CONFIG.endpoints.statistics.serviceTips.method,
+        urlExpenses = parseRoute(CONFIG.endpoints.statistics.expenses.path, {}),
+        methodExpenses = CONFIG.endpoints.statistics.expenses.method,
+        urlTotalCashin = parseRoute(CONFIG.endpoints.statistics.totalCashin.path, {}),
+        methodTotalCashin = CONFIG.endpoints.statistics.totalCashin.method,
+        urlHoursPlayed = parseRoute(CONFIG.endpoints.statistics.hoursPlayed.path, {}),
+        methodHoursPlayed = CONFIG.endpoints.statistics.hoursPlayed.method,
+        urlPlayers = parseRoute(CONFIG.endpoints.statistics.players.path, {}),
+        methodPlayers = CONFIG.endpoints.statistics.players.method,
+        urlRakeRace = parseRoute(CONFIG.endpoints.statistics.rakeRace.path, {}),
+        methodRakeRace = CONFIG.endpoints.statistics.rakeRace.method,
+        urlTipsPerDealer = parseRoute(CONFIG.endpoints.statistics.tipsPerDealer.path, {}),
+        methodTipsPearDealer = CONFIG.endpoints.statistics.tipsPerDealer.method,
+        urlTipsPerService = parseRoute(CONFIG.endpoints.statistics.tipsPerService.path, {}),
+        methodTipsPerService = CONFIG.endpoints.statistics.tipsPerService.method;
+
+    var interval = $('#statistics-form').serializeArray().reduce(function(obj, item) {
+        obj[item.name] = item.value;
+        return obj;
+    }, {});
+
+    statisticsResponse.interval = interval;
+    
+    $('#forms').html('');
+    $('#main').html('');
+
+    // loadCommissionsGraph(urlCommissions, methodCommissions, form, errorHandler);
+    loadDealerTipsGraph(urlDealerTips, methodDealerTips, form, errorHandler);
+
+
+/*
     makeAPIRequest(
         urlServiceTips,
         methodServiceTips,
@@ -2435,7 +2620,7 @@ function statisticsSubmit() {
                                 'rgba(153, 102, 255, 1)',
                                 'rgba(255, 159, 64, 1)'
                             ],
-                            borderWidth: 1
+                            borderWidth: 3
                         }]
                     },
                     options: {
@@ -2453,7 +2638,8 @@ function statisticsSubmit() {
         errorHandler,
         form
     );
-
+    */
+/*
     makeAPIRequest(
         urlExpenses,
         methodExpenses,
@@ -2505,7 +2691,7 @@ function statisticsSubmit() {
                                 'rgba(153, 102, 255, 1)',
                                 'rgba(255, 159, 64, 1)'
                             ],
-                            borderWidth: 1
+                            borderWidth: 3
                         }]
                     },
                     options: {
@@ -2575,7 +2761,7 @@ function statisticsSubmit() {
                                 'rgba(153, 102, 255, 1)',
                                 'rgba(255, 159, 64, 1)'
                             ],
-                            borderWidth: 1
+                            borderWidth: 3
                         }]
                     },
                     options: {
@@ -2593,4 +2779,6 @@ function statisticsSubmit() {
         errorHandler,
         form
     );
+
+     */
 }
