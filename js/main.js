@@ -2203,18 +2203,6 @@ function requestStatistics () {
 
 }
 
-function fetchCommissionStatistics() {
-
-}
-
-function fetchDealerTipsStatistics() {
-
-}
-
-function fetchServiceTipsStatistics() {
-
-}
-
 function generateDataOfPeriod(start, end) {
     // generate initialized data
     const dateStart = moment(start);
@@ -2232,22 +2220,294 @@ function generateDataOfPeriod(start, end) {
     return years;
 }
 
-function commissionByMonth(data) {
+function displayCommissionsBySession(data) {
+    debug(data);
+    $('#myChartCommissions').remove();
+    $('#filtCommBySession').prop('disabled', true);
+    $('#filtCommByMonth').prop('disabled', false);
+
+    $('#commissionsDiv').append("<canvas id='myChartCommissions'> </canvas>");
+    var ctx = document.getElementById('myChartCommissions'),
+        totals = [],
+        dates = [];
+    //debug(data['dataCommissions']);
+    data.dataCommissions.forEach(function (item) {
+        totals.push(item.total);
+        dates.push(item.startTimeReal.date.substr(0, 10));
+    });
+
+    //debug(totals); debug(dates);
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: '# commissions',
+                data: totals,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+
+function displayDealerTipsBySession(data) {
+    $('#myChartDealerTips').remove();
+    $('#filtDealBySession').prop('disabled', true);
+    $('#filtDealByMonth').prop('disabled', false);
+    $('#dealerTipsDiv').append("<canvas id='myChartDealerTips'> </canvas>");
+    var ctx = document.getElementById('myChartDealerTips'),
+        totals = [],
+        dates = [];
+    debug(data.data);
+    data.dataDealerTips.forEach(function (item) {
+        totals.push(item.total);
+        dates.push(item.startTimeReal.date.substr(0, 10));
+    });
+
+    // debug(totals); debug(ids);
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: '# DealerTips',
+                data: totals,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+
+function displayServiceTipsBySession(data) {
+    $('#myChartServiceTips').remove();
+    $('#filtServBySession').prop('disabled', true);
+    $('#filtServByMonth').prop('disabled', false);
+    $('#serviceTipsDiv').append("<canvas id='myChartServiceTips'> </canvas>");
+    var ctx = document.getElementById('myChartServiceTips'),
+        totals = [],
+        dates = [];
+    debug(data.data);
+    data.dataServiceTips.forEach(function (item) {
+        totals.push(item.total);
+        dates.push(item.startTimeReal.date.substr(0, 10));
+    });
+
+    // debug(totals); debug(dates);
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: '# ServiceTips',
+                data: totals,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+
+function displayExpensesBySession(data) {
+    $('#myChartExpenses').remove();
+    $('#filtExpBySession').prop('disabled', true);
+    $('#filtExpByMonth').prop('disabled', false);
+    $('#expensesDiv').append("<canvas id='myChartExpenses'> </canvas></canvas>");
+    var ctx = document.getElementById('myChartExpenses'),
+        totals = [],
+        dates = [];
+    debug(data.data);
+    data.dataExpenses.forEach(function (item) {
+        totals.push(item.total);
+        dates.push(item.startTimeReal.date.substr(0, 10));
+    });
+
+    // debug(totals); debug(dates);
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: '# Expenses',
+                data: totals,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+
+function displayTotalCashinBySession(data) {
+    $('#totalCashinDiv').remove();
+    $('#statistics').append("<div class='widget' id='totalCashinDiv'> <canvas id=\"myChartTotalCashin\"> </canvas><button onclick='displayTotalCashinByMonth(statisticsResponse)'>byMonth</button></div>");
+    var ctx = document.getElementById('myChartTotalCashin'),
+        totals = [],
+        dates = [];
+    debug(data.data);
+    data.dataTotalCashin.forEach(function (item) {
+        totals.push(item.total);
+        dates.push(item.startTimeReal.date.substr(0, 10));
+    });
+
+    // debug(totals); debug(dates);
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: '# Total cashin',
+                data: totals,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+
+function displayCommissionsByMonth(data) {
     var list = generateDataOfPeriod(data.interval.from, data.interval.end);
 
     // loadDataOfPeriod
-    data.data.forEach(function (item) {
+    data.dataCommissions.forEach(function (item) {
         debug(item.total);
         list[moment(item.startTimeReal.date).format('YYYY')][moment(item.startTimeReal.date).format('MMMM')] += parseFloat(item.total);
     });
     debug('list'); debug(list);
 
     // render graphic
-    $('#commissionsDiv').html('');
+    $('#myChartCommissions').remove();
+    $('#filtCommByMonth').prop('disabled', true);
+    $('#filtCommBySession').prop('disabled', false);
 
     statisticsResponse = data;
 
-    $('#commissionsDiv').append("<canvas id='myChartCommissions'></canvas> <button>n/a</button>");
+    $('#commissionsDiv').append("<canvas id='myChartCommissions'></canvas>");
     var ctx = document.getElementById('myChartCommissions'),
         totals = [],
         months = [];
@@ -2305,23 +2565,25 @@ function commissionByMonth(data) {
     });
 }
 
-function dealerTipsByMonth(data) {
+function displayDealerTipsByMonth(data) {
     debug(data);
     var list = generateDataOfPeriod(data.interval.from, data.interval.end);
 
     // loadDataOfPeriod
-    data.data.forEach(function (item) {
+    data.dataDealerTips.forEach(function (item) {
         debug(item.total);
         list[moment(item.startTimeReal.date).format('YYYY')][moment(item.startTimeReal.date).format('MMMM')] += parseFloat(item.total);
     });
     debug('list'); debug(list);
 
     // render graphic
-    $('#dealerTipsDiv').html('');
+    $('#myChartDealerTips').remove();
+    $('#filtDealByMonth').prop('disabled', true);
+    $('#filtDealBySession').prop('disabled', false);
 
     statisticsResponse = data;
 
-    $('#dealerTipsDiv').append("<canvas id='myChartDealerTips'></canvas> <button>n/a</button>");
+    $('#dealerTipsDiv').append("<canvas id='myChartDealerTips'></canvas>");
     var ctx = document.getElementById('myChartDealerTips'),
         totals = [],
         months = [];
@@ -2379,9 +2641,161 @@ function dealerTipsByMonth(data) {
     });
 }
 
+function displayServiceTipsByMonth(data) {
+    debug(data);
+    var list = generateDataOfPeriod(data.interval.from, data.interval.end);
+
+    // loadDataOfPeriod
+    data.dataServiceTips.forEach(function (item) {
+        debug(item.total);
+        list[moment(item.startTimeReal.date).format('YYYY')][moment(item.startTimeReal.date).format('MMMM')] += parseFloat(item.total);
+    });
+    debug('list'); debug(list);
+
+    // render graphic
+    $('#myChartServiceTips').remove();
+    $('#filtServByMonth').prop('disabled', true);
+    $('#filtServBySession').prop('disabled', false);
+
+    statisticsResponse = data;
+
+    $('#serviceTipsDiv').append("<canvas id='myChartServiceTips'></canvas>");
+    var ctx = document.getElementById('myChartServiceTips'),
+        totals = [],
+        months = [];
+
+    for (var year in list) {
+        if (list.hasOwnProperty(year)) {
+            debug(year);
+            for (var month in list[year]) {
+                if (list[year].hasOwnProperty(month)) {
+                    debug(month);
+                    totals.push(list[year][month]);
+                    months.push(month+ '-' + year);
+                }
+            }
+        }
+    }
+
+    debug(totals); debug(months);
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: '# serviceTipsByMonth',
+                data: totals,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+
+function displayExpensesByMonth(data) {
+    debug(data);
+    var list = generateDataOfPeriod(data.interval.from, data.interval.end);
+
+    // loadDataOfPeriod
+    data.dataExpenses.forEach(function (item) {
+        debug(item.total);
+        list[moment(item.startTimeReal.date).format('YYYY')][moment(item.startTimeReal.date).format('MMMM')] += parseFloat(item.total);
+    });
+    debug('list'); debug(list);
+
+    // render graphic
+    $('#myChartExpenses').remove();
+    $('#filtExpByMonth').prop('disabled', true);
+    $('#filtExpBySession').prop('disabled', false);
+
+    statisticsResponse = data;
+
+    $('#expensesDiv').append("<canvas id='myChartExpenses'></canvas>");
+    var ctx = document.getElementById('myChartExpenses'),
+        totals = [],
+        months = [];
+
+    for (var year in list) {
+        if (list.hasOwnProperty(year)) {
+            debug(year);
+            for (var month in list[year]) {
+                if (list[year].hasOwnProperty(month)) {
+                    debug(month);
+                    totals.push(list[year][month]);
+                    months.push(month+ '-' + year);
+                }
+            }
+        }
+    }
+
+    debug(totals); debug(months);
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: '# ExpensesByMonth',
+                data: totals,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+
 var statisticsResponse = {};
 
-function loadCommissionsGraph(url, method, form, errorHandler) {
+function loadCommissionsData(url, method, form, successHandler, errorHandler) {
     makeAPIRequest(
         url,
         method,
@@ -2398,56 +2812,8 @@ function loadCommissionsGraph(url, method, form, errorHandler) {
 
             // Examine the text in the response
             response.json().then(function (data) {
-                statisticsResponse.data = data.data;
-
-                $('#statistics').append("<div class='widget' id='commissionsDiv'> <canvas id='myChartCommissions'> </canvas> <button onclick='commissionByMonth(statisticsResponse)'>byMonth</button></div>");
-                var ctx = document.getElementById('myChartCommissions'),
-                    totals = [],
-                    ids = [];
-                debug(data.data);
-                data.data.forEach(function (item) {
-                    totals.push(item.total);
-                    ids.push(item.id);
-                });
-
-                debug(totals); debug(ids);
-
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ids,
-                        datasets: [{
-                            label: '# commissions',
-                            data: totals,
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(153, 102, 255, 0.2)',
-                                'rgba(255, 159, 64, 0.2)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)'
-                            ],
-                            borderWidth: 3
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
+                statisticsResponse.dataCommissions =  data.data;
+                successHandler();
             });
         },
         errorHandler,
@@ -2455,7 +2821,7 @@ function loadCommissionsGraph(url, method, form, errorHandler) {
     );
 }
 
-function loadDealerTipsGraph (url, method, form, errorHandler) {
+function loadDealerTipsData (url, method, form, successHandler, errorHandler) {
     makeAPIRequest(
         url,
         method,
@@ -2472,61 +2838,93 @@ function loadDealerTipsGraph (url, method, form, errorHandler) {
 
             // Examine the text in the response
             response.json().then(function (data) {
-                statisticsResponse.data = data.data;
-                $('#statistics').append("<div class='widget' id='dealerTipsDiv'> <canvas id=\"myChartDealerTips\"> </canvas><button onclick='dealerTipsByMonth(statisticsResponse)'>byMonth</button></div>");
-                var ctx = document.getElementById('myChartDealerTips'),
-                    totals = [],
-                    ids = [];
-                debug(data.data);
-                data.data.forEach(function (item) {
-                    totals.push(item.total);
-                    ids.push(item.id);
-                });
-
-                debug(totals); debug(ids);
-
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ids,
-                        datasets: [{
-                            label: '# DealerTips',
-                            data: totals,
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(153, 102, 255, 0.2)',
-                                'rgba(255, 159, 64, 0.2)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)'
-                            ],
-                            borderWidth: 3
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
+                statisticsResponse.dataDealerTips = data.data;
+                successHandler();
             });
         },
         errorHandler,
         form
     );
 }
+
+function loadServiceTipsData(url, method, form, successHandler, errorHandler) {
+    makeAPIRequest(
+        url,
+        method,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                statisticsResponse.dataServiceTips = data.data;
+                successHandler();
+            });
+        },
+        errorHandler,
+        form
+    );
+}
+
+function loadExpensesData(url, method, form, successHandler, errorHandler) {
+    makeAPIRequest(
+        url,
+        method,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                statisticsResponse.dataExpenses= data.data;
+                successHandler();
+            });
+        },
+        errorHandler,
+        form
+    );
+}
+
+function loadTotalCashinData(url, method, form, successHandler, errorHandler) {
+    makeAPIRequest(
+        url,
+        method,
+        function (response) {
+            if (response.status !== 200 && response.status !== 201) {
+                errorHandler(response);
+
+                // Examine the text in the response
+                response.json().then(function (data) {
+                    alert(data.detail);
+                });
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function (data) {
+                statisticsResponse.dataTotalCashin= data.data;
+                successHandler();
+            });
+        },
+        errorHandler,
+        form
+    );
+}
+
 
 function statisticsSubmit() {
       var form = new FormData(document.getElementById('statistics-form')),
@@ -2564,221 +2962,45 @@ function statisticsSubmit() {
     $('#forms').html('');
     $('#main').html('');
 
-    // loadCommissionsGraph(urlCommissions, methodCommissions, form, errorHandler);
-    loadDealerTipsGraph(urlDealerTips, methodDealerTips, form, errorHandler);
+    loadCommissionsData(urlCommissions, methodCommissions, form, function() {
+        $('#statistics').append(
+            "<div class='widget' id='commissionsDiv' </div> " +
+            "<button type=\"button\" class=\"btn btn-outline-primary\" id='filtCommBySession' onclick='displayCommissionsBySession(statisticsResponse)'>bySession</button>" +
+            " <button type=\"button\" class=\"btn btn-outline-danger\" id='filtCommByMonth' onclick='displayCommissionsByMonth(statisticsResponse)'>byMonth</button>"
+        );
+        displayCommissionsBySession(statisticsResponse);
+    }, errorHandler);
 
+    loadDealerTipsData(urlDealerTips, methodDealerTips, form, function () {
+        $('#statistics').append(
+            "<div class='widget' id='dealerTipsDiv' </div> " +
+            "<button type=\"button\" class=\"btn btn-outline-primary\" id='filtDealBySession' onclick='displayDealerTipsBySession(statisticsResponse)'>bySession</button>" +
+            " <button type=\"button\" class=\"btn btn-outline-danger\" id='filtDealByMonth' onclick='displayDealerTipsByMonth(statisticsResponse)'>byMonth</button>"
+        );
+        displayDealerTipsBySession(statisticsResponse);
+    }, errorHandler);
 
-/*
-    makeAPIRequest(
-        urlServiceTips,
-        methodServiceTips,
-        function (response) {
-            if (response.status !== 200 && response.status !== 201) {
-                errorHandler(response);
+    loadServiceTipsData(urlServiceTips, methodServiceTips, form, function () {
+        $('#statistics').append(
+            "<div class='widget' id='serviceTipsDiv' </div> " +
+            "<button type=\"button\" class=\"btn btn-outline-primary\" id='filtServBySession' onclick='displayServiceTipsBySession(statisticsResponse)'>bySession</button>" +
+            " <button type=\"button\" class=\"btn btn-outline-danger\" id='filtServByMonth' onclick='displayServiceTipsByMonth(statisticsResponse)'>byMonth</button>"
+        );
+        displayServiceTipsBySession(statisticsResponse);
+    }, errorHandler);
 
-                // Examine the text in the response
-                response.json().then(function (data) {
-                    alert(data.detail);
-                });
-                return;
-            }
+    loadExpensesData(urlExpenses, methodExpenses, form, function () {
+        $('#statistics').append(
+            "<div class='widget' id='expensesDiv' </div> " +
+            "<button type=\"button\" class=\"btn btn-outline-primary\" id='filtExpBySession' onclick='displayExpensesBySession(statisticsResponse)'>bySession</button>" +
+            " <button type=\"button\" class=\"btn btn-outline-danger\" id='filtExpByMonth' onclick='displayExpensesByMonth(statisticsResponse)'>byMonth</button>"
+        );
+        displayExpensesBySession(statisticsResponse);
+    }, errorHandler);
 
-            // Examine the text in the response
-            response.json().then(function (data) {
-                $('#statistics').append("<div class='widget'> <canvas id=\"myChartServiceTips\"> </canvas></div>");
-                var ctx = document.getElementById('myChartServiceTips'),
-                    totals = [],
-                    ids = [];
-                debug(data.data);
-                data.data.forEach(function (item) {
-                    totals.push(item.total);
-                    ids.push(item.id);
-                });
-
-                debug(totals); debug(ids);
-
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ids,
-                        datasets: [{
-                            label: '# ServiceTips',
-                            data: totals,
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(153, 102, 255, 0.2)',
-                                'rgba(255, 159, 64, 0.2)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)'
-                            ],
-                            borderWidth: 3
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            });
-        },
-        errorHandler,
-        form
-    );
+    /*
+    loadTotalCashinData(urlTotalCashin, methodTotalCashin, form, function () {
+        displayTotalCashinBySession(statisticsResponse);
+    }, errorHandler);
     */
-/*
-    makeAPIRequest(
-        urlExpenses,
-        methodExpenses,
-        function (response) {
-            if (response.status !== 200 && response.status !== 201) {
-                errorHandler(response);
-
-                // Examine the text in the response
-                response.json().then(function (data) {
-                    alert(data.detail);
-                });
-                return;
-            }
-
-            // Examine the text in the response
-            response.json().then(function (data) {
-                $('#statistics').append("<div class='widget'> <canvas id=\"myChartExpenses\"> </canvas></div>");
-                var ctx = document.getElementById('myChartExpenses'),
-                    totals = [],
-                    ids = [];
-                debug(data.data);
-                data.data.forEach(function (item) {
-                    totals.push(item.total);
-                    ids.push(item.id);
-                });
-
-                debug(totals); debug(ids);
-
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ids,
-                        datasets: [{
-                            label: '# Expenses',
-                            data: totals,
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(153, 102, 255, 0.2)',
-                                'rgba(255, 159, 64, 0.2)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)'
-                            ],
-                            borderWidth: 3
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            });
-        },
-        errorHandler,
-        form
-    );
-
-    makeAPIRequest(
-        urlTotalCashin,
-        methodTotalCashin,
-        function (response) {
-            if (response.status !== 200 && response.status !== 201) {
-                errorHandler(response);
-
-                // Examine the text in the response
-                response.json().then(function (data) {
-                    alert(data.detail);
-                });
-                return;
-            }
-
-            // Examine the text in the response
-            response.json().then(function (data) {
-                $('#statistics').append("<div class='widget'> <canvas id=\"myChartTotalCashin\"> </canvas></div>");
-                var ctx = document.getElementById('myChartTotalCashin'),
-                    totals = [],
-                    ids = [];
-                debug(data.data);
-                data.data.forEach(function (item) {
-                    totals.push(item.total);
-                    ids.push(item.id);
-                });
-
-                debug(totals); debug(ids);
-
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ids,
-                        datasets: [{
-                            label: '# Total cashin',
-                            data: totals,
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(153, 102, 255, 0.2)',
-                                'rgba(255, 159, 64, 0.2)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)'
-                            ],
-                            borderWidth: 3
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            });
-        },
-        errorHandler,
-        form
-    );
-
-     */
 }
