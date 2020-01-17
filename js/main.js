@@ -2223,8 +2223,8 @@ function generateDataOfPeriod(start, end) {
 function displayCommissionsBySession(data) {
     debug(data);
     $('#myChartCommissions').remove();
-    $('#filtCommBySession').prop('disabled', true);
-    $('#filtCommByMonth').prop('disabled', false);
+    $('#filtCommBySession').prop('disabled', true).addClass('button-disabled');
+    $('#filtCommByMonth').prop('disabled', false).removeClass('button-disabled');
 
     $('#commissionsDiv').append("<canvas id='myChartCommissions'> </canvas>");
     var ctx = document.getElementById('myChartCommissions'),
@@ -2233,7 +2233,7 @@ function displayCommissionsBySession(data) {
     //debug(data['dataCommissions']);
     data.dataCommissions.forEach(function (item) {
         totals.push(item.total);
-        dates.push(item.startTimeReal.date.substr(0, 10));
+        dates.push(item.startTimeReal.date.substr(0, 10).replace(/-/g, '/'));
     });
 
     //debug(totals); debug(dates);
@@ -2278,8 +2278,8 @@ function displayCommissionsBySession(data) {
 
 function displayDealerTipsBySession(data) {
     $('#myChartDealerTips').remove();
-    $('#filtDealBySession').prop('disabled', true);
-    $('#filtDealByMonth').prop('disabled', false);
+    $('#filtDealBySession').prop('disabled', true).addClass('button-disabled');
+    $('#filtDealByMonth').prop('disabled', false).removeClass('button-disabled');
     $('#dealerTipsDiv').append("<canvas id='myChartDealerTips'> </canvas>");
     var ctx = document.getElementById('myChartDealerTips'),
         totals = [],
@@ -2287,7 +2287,7 @@ function displayDealerTipsBySession(data) {
     debug(data.data);
     data.dataDealerTips.forEach(function (item) {
         totals.push(item.total);
-        dates.push(item.startTimeReal.date.substr(0, 10));
+        dates.push(item.startTimeReal.date.substr(0, 10).replace(/-/g, '/'));
     });
 
     // debug(totals); debug(ids);
@@ -2332,8 +2332,8 @@ function displayDealerTipsBySession(data) {
 
 function displayServiceTipsBySession(data) {
     $('#myChartServiceTips').remove();
-    $('#filtServBySession').prop('disabled', true);
-    $('#filtServByMonth').prop('disabled', false);
+    $('#filtServBySession').prop('disabled', true).addClass('button-disabled');
+    $('#filtServByMonth').prop('disabled', false).removeClass('button-disabled');
     $('#serviceTipsDiv').append("<canvas id='myChartServiceTips'> </canvas>");
     var ctx = document.getElementById('myChartServiceTips'),
         totals = [],
@@ -2341,7 +2341,7 @@ function displayServiceTipsBySession(data) {
     debug(data.data);
     data.dataServiceTips.forEach(function (item) {
         totals.push(item.total);
-        dates.push(item.startTimeReal.date.substr(0, 10));
+        dates.push(item.startTimeReal.date.substr(0, 10).replace(/-/g, '/'));
     });
 
     // debug(totals); debug(dates);
@@ -2386,8 +2386,8 @@ function displayServiceTipsBySession(data) {
 
 function displayExpensesBySession(data) {
     $('#myChartExpenses').remove();
-    $('#filtExpBySession').prop('disabled', true);
-    $('#filtExpByMonth').prop('disabled', false);
+    $('#filtExpBySession').prop('disabled', true).addClass('button-disabled');
+    $('#filtExpByMonth').prop('disabled', false).removeClass('button-disabled');
     $('#expensesDiv').append("<canvas id='myChartExpenses'> </canvas></canvas>");
     var ctx = document.getElementById('myChartExpenses'),
         totals = [],
@@ -2395,7 +2395,7 @@ function displayExpensesBySession(data) {
     debug(data.data);
     data.dataExpenses.forEach(function (item) {
         totals.push(item.total);
-        dates.push(item.startTimeReal.date.substr(0, 10));
+        dates.push(item.startTimeReal.date.substr(0, 10).replace(/-/g, '/'));
     });
 
     // debug(totals); debug(dates);
@@ -2439,18 +2439,21 @@ function displayExpensesBySession(data) {
 }
 
 function displayTotalCashinBySession(data) {
-    $('#totalCashinDiv').remove();
-    $('#statistics').append("<div class='widget' id='totalCashinDiv'> <canvas id=\"myChartTotalCashin\"> </canvas><button onclick='displayTotalCashinByMonth(statisticsResponse)'>byMonth</button></div>");
+    $('#myChartTotalCashin').remove();
+    $('#filtCashBySession').prop('disabled', true).addClass('button-disabled');
+    $('#filtCashByMonth').prop('disabled', false).removeClass('button-disabled');
+    $('#totalCashinDiv').append("<canvas id='myChartTotalCashin'> </canvas></canvas>");
+
     var ctx = document.getElementById('myChartTotalCashin'),
         totals = [],
         dates = [];
     debug(data.data);
     data.dataTotalCashin.forEach(function (item) {
         totals.push(item.total);
-        dates.push(item.startTimeReal.date.substr(0, 10));
+        dates.push(item.startTimeReal.date.substr(0, 10).replace(/-/g, '/'));
     });
 
-    // debug(totals); debug(dates);
+    // debug(totals); debug(dates); return;
 
     var myChart = new Chart(ctx, {
         type: 'bar',
@@ -2502,8 +2505,8 @@ function displayCommissionsByMonth(data) {
 
     // render graphic
     $('#myChartCommissions').remove();
-    $('#filtCommByMonth').prop('disabled', true);
-    $('#filtCommBySession').prop('disabled', false);
+    $('#filtCommByMonth').prop('disabled', true).addClass('button-disabled');
+    $('#filtCommBySession').prop('disabled', false).removeClass('button-disabled');
 
     statisticsResponse = data;
 
@@ -2578,8 +2581,8 @@ function displayDealerTipsByMonth(data) {
 
     // render graphic
     $('#myChartDealerTips').remove();
-    $('#filtDealByMonth').prop('disabled', true);
-    $('#filtDealBySession').prop('disabled', false);
+    $('#filtDealByMonth').prop('disabled', true).addClass('button-disabled');
+    $('#filtDealBySession').prop('disabled', false).removeClass('button-disabled');
 
     statisticsResponse = data;
 
@@ -2654,8 +2657,8 @@ function displayServiceTipsByMonth(data) {
 
     // render graphic
     $('#myChartServiceTips').remove();
-    $('#filtServByMonth').prop('disabled', true);
-    $('#filtServBySession').prop('disabled', false);
+    $('#filtServByMonth').prop('disabled', true).addClass('button-disabled');
+    $('#filtServBySession').prop('disabled', false).removeClass('button-disabled');
 
     statisticsResponse = data;
 
@@ -2730,8 +2733,8 @@ function displayExpensesByMonth(data) {
 
     // render graphic
     $('#myChartExpenses').remove();
-    $('#filtExpByMonth').prop('disabled', true);
-    $('#filtExpBySession').prop('disabled', false);
+    $('#filtExpByMonth').prop('disabled', true).addClass('button-disabled');
+    $('#filtExpBySession').prop('disabled', false).removeClass('button-disabled');
 
     statisticsResponse = data;
 
@@ -2761,6 +2764,82 @@ function displayExpensesByMonth(data) {
             labels: months,
             datasets: [{
                 label: '# ExpensesByMonth',
+                data: totals,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+
+function displayTotalCashinByMonth(data) {
+    debug(data);
+    var list = generateDataOfPeriod(data.interval.from, data.interval.end);
+
+    // loadDataOfPeriod
+    data.dataTotalCashin.forEach(function (item) {
+        debug(item.total);
+        list[moment(item.startTimeReal.date).format('YYYY')][moment(item.startTimeReal.date).format('MMMM')] += parseFloat(item.total);
+    });
+    debug('list'); debug(list);
+
+    // render graphic
+    $('#myChartTotalCashin').remove();
+    $('#filtCashByMonth').prop('disabled', true).addClass('button-disabled');
+    $('#filtCashBySession').prop('disabled', false).removeClass('button-disabled');
+
+    statisticsResponse = data;
+
+    $('#totalCashinDiv').append("<canvas id='myChartTotalCashin'></canvas>");
+    var ctx = document.getElementById('myChartTotalCashin'),
+        totals = [],
+        months = [];
+
+    for (var year in list) {
+        if (list.hasOwnProperty(year)) {
+            debug(year);
+            for (var month in list[year]) {
+                if (list[year].hasOwnProperty(month)) {
+                    debug(month);
+                    totals.push(list[year][month]);
+                    months.push(month+ '-' + year);
+                }
+            }
+        }
+    }
+
+    debug(totals); debug(months);
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: '# TotalCashinByMonth',
                 data: totals,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -2965,8 +3044,8 @@ function statisticsSubmit() {
     loadCommissionsData(urlCommissions, methodCommissions, form, function() {
         $('#statistics').append(
             "<div class='widget' id='commissionsDiv' </div> " +
-            "<button type=\"button\" class=\"btn btn-outline-primary\" id='filtCommBySession' onclick='displayCommissionsBySession(statisticsResponse)'>bySession</button>" +
-            " <button type=\"button\" class=\"btn btn-outline-danger\" id='filtCommByMonth' onclick='displayCommissionsByMonth(statisticsResponse)'>byMonth</button>"
+            "<button type=\"button\" class=\"btn btn-primary\" id='filtCommBySession' onclick='displayCommissionsBySession(statisticsResponse)'>bySession</button>" +
+            " <button type=\"button\" class=\"btn btn-success\" id='filtCommByMonth' onclick='displayCommissionsByMonth(statisticsResponse)'>byMonth</button>"
         );
         displayCommissionsBySession(statisticsResponse);
     }, errorHandler);
@@ -2974,8 +3053,8 @@ function statisticsSubmit() {
     loadDealerTipsData(urlDealerTips, methodDealerTips, form, function () {
         $('#statistics').append(
             "<div class='widget' id='dealerTipsDiv' </div> " +
-            "<button type=\"button\" class=\"btn btn-outline-primary\" id='filtDealBySession' onclick='displayDealerTipsBySession(statisticsResponse)'>bySession</button>" +
-            " <button type=\"button\" class=\"btn btn-outline-danger\" id='filtDealByMonth' onclick='displayDealerTipsByMonth(statisticsResponse)'>byMonth</button>"
+            "<button type=\"button\" class=\"btn btn-primary\" id='filtDealBySession' onclick='displayDealerTipsBySession(statisticsResponse)'>bySession</button>" +
+            " <button type=\"button\" class=\"btn btn-success\" id='filtDealByMonth' onclick='displayDealerTipsByMonth(statisticsResponse)'>byMonth</button>"
         );
         displayDealerTipsBySession(statisticsResponse);
     }, errorHandler);
@@ -2983,8 +3062,8 @@ function statisticsSubmit() {
     loadServiceTipsData(urlServiceTips, methodServiceTips, form, function () {
         $('#statistics').append(
             "<div class='widget' id='serviceTipsDiv' </div> " +
-            "<button type=\"button\" class=\"btn btn-outline-primary\" id='filtServBySession' onclick='displayServiceTipsBySession(statisticsResponse)'>bySession</button>" +
-            " <button type=\"button\" class=\"btn btn-outline-danger\" id='filtServByMonth' onclick='displayServiceTipsByMonth(statisticsResponse)'>byMonth</button>"
+            "<button type=\"button\" class=\"btn btn-primary\" id='filtServBySession' onclick='displayServiceTipsBySession(statisticsResponse)'>bySession</button>" +
+            " <button type=\"button\" class=\"btn btn-success\" id='filtServByMonth' onclick='displayServiceTipsByMonth(statisticsResponse)'>byMonth</button>"
         );
         displayServiceTipsBySession(statisticsResponse);
     }, errorHandler);
@@ -2992,15 +3071,18 @@ function statisticsSubmit() {
     loadExpensesData(urlExpenses, methodExpenses, form, function () {
         $('#statistics').append(
             "<div class='widget' id='expensesDiv' </div> " +
-            "<button type=\"button\" class=\"btn btn-outline-primary\" id='filtExpBySession' onclick='displayExpensesBySession(statisticsResponse)'>bySession</button>" +
-            " <button type=\"button\" class=\"btn btn-outline-danger\" id='filtExpByMonth' onclick='displayExpensesByMonth(statisticsResponse)'>byMonth</button>"
+            "<button type=\"button\" class=\"btn btn-primary\" id='filtExpBySession' onclick='displayExpensesBySession(statisticsResponse)'>bySession</button>" +
+            " <button type=\"button\" class=\"btn btn-success\" id='filtExpByMonth' onclick='displayExpensesByMonth(statisticsResponse)'>byMonth</button>"
         );
         displayExpensesBySession(statisticsResponse);
     }, errorHandler);
 
-    /*
     loadTotalCashinData(urlTotalCashin, methodTotalCashin, form, function () {
+        $('#statistics').append(
+            "<div class='widget' id='totalCashinDiv' </div> " +
+            "<button type=\"button\" class=\"btn btn-primary\" id='filtCashBySession' onclick='displayTotalCashinBySession(statisticsResponse)'>bySession</button>" +
+            " <button type=\"button\" class=\"btn btn-success\" id='filtCashByMonth' onclick='displayTotalCashinByMonth(statisticsResponse)'>byMonth</button>"
+        );
         displayTotalCashinBySession(statisticsResponse);
     }, errorHandler);
-    */
 }
