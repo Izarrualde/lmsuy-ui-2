@@ -1,7 +1,6 @@
 <div class="card-header bg-primary text-white">
     Listado de Comisiones
 </div>
-
 <div class="card-body">
     <section class="container row">
         <article class="col-md-9" style="width: auto; margin: auto auto;">
@@ -45,7 +44,7 @@
                     </tr>
                     <tr>
                         <td colspan="8">
-                            <a href="#" class="btn btn-lg btn-block btn-danger" onclick="addCommission({{ idSession }});"> <i class="fas fa-plus"></i></a>
+                            <button href="#" id='addCommissionButton' class="btn btn-lg btn-block btn-danger" onclick="addCommission({{ idSession }}, '{{ sessionStartTimeReal }}', '{{ sessionEndTime }}'); return false;"> <i class="fas fa-plus"></i></button>
                         </td>
                     </tr>
                 </tbody>

@@ -22,7 +22,7 @@
         <div class="col-md-12 col-sm-8 col-xs-8">
 			<ul id="menu" class="nav nav-pills">
 			  <li class="nav-item">
-			  	<button type="button" id="menuitem-start" class="nav-link btn btn-outline-primary" href="#">Inicio</button>
+			  	<button type="button"  onclick="location.reload();" id="menuitem-start" class="nav-link btn btn-outline-primary" href="#">Inicio</button>
 			  </li>
 			  <li class="nav-item">
 			  	<button type="button" onclick="fetchSessions();" id="menuitem-sessions" class="nav-link btn btn-outline-primary " href="#">Sesiones</button>
@@ -39,18 +39,18 @@
 				</li>
 			</ul>
 
+			<!--
             <nav id="breadcrumbs" aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item active" aria-current="page">Inicio </li>
+                    <li id='start-breadcrumb' class="breadcrumb-item active" aria-current="page">Inicio </li>
                 </ol>
-            </nav>
+            </nav> -->
 
             <div id="loader">
             	<div class="lds-ripple"><div></div><div></div></div>
             </div>
         </div>
     </div>
-
 
 	<div class="container hide" id="login-div">
 		<div class="col-md-8">

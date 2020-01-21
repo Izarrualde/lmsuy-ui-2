@@ -296,6 +296,8 @@ const STATISTIC_SELECTOR = {
     }
 };
 
+const ONE_YEAR = 365;
+
 function parseRoute(path, args) {
     for (var rep in args) {
         path = path.replace(":" + rep, args[rep]);
@@ -453,12 +455,16 @@ function fetchSessions() {
     $('.nav-link.active').removeClass('active');
     $('#menuitem-sessions').addClass('active');
     $('#forms').html('');
+    $('#start-breadcrumb').remove();
     $('#statistics').html('');
 
     var url = parseRoute(CONFIG.endpoints.sessions.fetchAll.path, {}),
         method = CONFIG.endpoints.sessions.fetchAll.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err);
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -482,7 +488,10 @@ function deleteSession(idSession) {
         }),
         method = CONFIG.endpoints.sessions.delete.method,
         errorHandler = function (err) {
-            debug(err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     if (! confirm("¿Está seguro que desea eliminar la sesión?")) {
@@ -515,7 +524,10 @@ function calculatePoints(idSession) {
         }),
         method = CONFIG.endpoints.sessions.calculatePoints.method,
         errorHandler = function (err) {
-            debug(err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     makeAPIRequest(
@@ -573,7 +585,10 @@ function fetchUsers() {
     var url = parseRoute(CONFIG.endpoints.users.fetchAll.path, {}),
         method = CONFIG.endpoints.users.fetchAll.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -596,7 +611,10 @@ function deleteUser(idUser) {
         }),
         method = CONFIG.endpoints.users.delete.method,
         errorHandler = function (err) {
-            debug(err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     if (! confirm("¿Está seguro que desea eliminar el usuario?")) {
@@ -630,7 +648,10 @@ function fetchBuyins(idSession, countSeatedPlayers, sessionDate) {
         }),
         method = CONFIG.endpoints.buyins.fetchAll.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -646,6 +667,9 @@ function fetchBuyins(idSession, countSeatedPlayers, sessionDate) {
                 countSeatedPlayers: countSeatedPlayers
             });
             $('#main').html(output);
+            if (countSeatedPlayers === 0) {
+                $('#addBuyinButton').prop('disabled', true).addClass('button-disabled');
+            }
         },
         errorHandler
     );
@@ -658,7 +682,10 @@ function deleteBuyin(idSession, idBuyin) {
         }),
         method = CONFIG.endpoints.buyins.delete.method,
         errorHandler = function (err) {
-            debug(err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     if (! confirm("¿Está seguro que desea eliminar el buyin?")) {
@@ -685,14 +712,18 @@ function deleteBuyin(idSession, idBuyin) {
     );
 }
 
-function fetchCommissions(idSession, commissionTotal, sessionDate) {
+function fetchCommissions(idSession, commissionTotal, sessionStartTimeReal, sessionEndTime) {
     $('#forms').html('');
+
     var url = parseRoute(CONFIG.endpoints.commissions.fetchAll.path, {
             "idSession": idSession
         }),
         method = CONFIG.endpoints.commissions.fetchAll.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -702,13 +733,18 @@ function fetchCommissions(idSession, commissionTotal, sessionDate) {
         function (template, data) {
             var output = template.render({
                 commissions: data._embedded.commissions,
-                sessionDate: sessionDate,
+                sessionStartTimeReal: sessionStartTimeReal,
+                sessionEndTime: sessionEndTime,
                 idSession: idSession,
                 commissionTotal: commissionTotal
             });
 
             debug(data);
             $('#main').html(output);
+
+            if (sessionStartTimeReal === '') {
+                $('#addCommissionButton').prop('disabled', true).addClass('button-disabled');
+            }
         },
         errorHandler
     );
@@ -721,7 +757,10 @@ function deleteCommission(idSession, idCommission) {
         }),
         method = CONFIG.endpoints.commissions.delete.method,
         errorHandler = function (err) {
-            debug(err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     if (! confirm("¿Está seguro que desea eliminar la comisión?")) {
@@ -756,7 +795,10 @@ function fetchUsersSession(idSession) {
         }),
         method = CONFIG.endpoints.userSession.fetchAll.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -784,7 +826,10 @@ function deleteUserSession(idSession, idUserSession) {
         }),
         method = CONFIG.endpoints.userSession.delete.method,
         errorHandler = function (err) {
-            debug(err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     if (! confirm("¿Está seguro que desea eliminar el usuario d la sesión?")) {
@@ -818,7 +863,10 @@ function fetchExpenses(idSession) {
         }),
         method = CONFIG.endpoints.expenses.fetchAll.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -843,7 +891,10 @@ function deleteExpenditure(idSession, idExpenditure) {
         }),
         method = CONFIG.endpoints.expenses.delete.method,
         errorHandler = function (err) {
-            debug(err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     if (! confirm("¿Está seguro que desea eliminar el item?")) {
@@ -892,7 +943,10 @@ async function fetchServiceTips(template, dataDealerTips, sessionDate, idSession
             $('#main').html(output);
         },
         function (err) {
-            debug(err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         },
     )
 }
@@ -904,7 +958,10 @@ function fetchDealerTips(idSession, sessionDate) {
         }),
         method = CONFIG.endpoints.dealerTips.fetchAll.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -926,7 +983,10 @@ function deleteDealerTip(idSession, idDealerTip) {
         }),
         method = CONFIG.endpoints.dealerTips.deleteDealerTip.method,
         errorHandler = function (err) {
-            debug(err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     if (! confirm("¿Está seguro que desea eliminar el dealer tip?")) {
@@ -960,7 +1020,10 @@ function deleteServiceTip(idSession, idServiceTip) {
         }),
         method = CONFIG.endpoints.serviceTips.deleteServiceTip.method,
         errorHandler = function (err) {
-            debug(err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     if (! confirm("¿Está seguro que desea eliminar el service tip?")) {
@@ -1006,7 +1069,10 @@ function updateCommission(idSession, idCommission) {
         }),
         method = CONFIG.endpoints.commissions.fetch.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -1037,13 +1103,60 @@ function updateCommission(idSession, idCommission) {
     );
 }
 
-function commissionSubmit(idSession) {
+function getFormData(idForm) {
+    var ret = $('#' + idForm).serializeArray().reduce(function(obj, item) {
+        obj[item.name] = item.value;
+        return obj;
+    }, {});
+
+    return ret;
+}
+
+function validateCommission(hour, sessionStart, sessionEnd, method) {
+    if (method === 'post') {
+        return validateAddCommission(hour, sessionStart, sessionEnd);
+    }
+
+    if (method === 'put') {
+        return validateUpdateCommission(hour, sessionStart, sessionEnd);
+    }
+}
+
+function validateCommissionHour(hour, sessionStart, sessionEnd) {
+    // params are moment objects
+    if (! sessionStart.isValid()) {
+        return false;
+    }
+
+    if (hour < sessionStart) {
+        return false;
+    }
+
+    if (sessionEnd.isValid() && (hour > sessionEnd)) {
+        return false;
+    }
+
+    return true;
+}
+
+function commissionSubmit(idSession, sessionStartTimeReal, sessionEndTime) {
     var url = $('#commissions-form').attr("action"),
         method = $('#commissions-form').attr("method"),
         form = new FormData(document.getElementById('commissions-form')),
         errorHandler = function (err) {
-            debug(err)
-        };
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
+        },
+        hour = moment(getFormData('commissions-form').hour),
+        startSession = moment(sessionStartTimeReal),
+        endSession = moment(sessionEndTime);
+
+    if (! validateCommissionHour(hour, startSession, endSession)) {
+        alert('Fecha y hora de comisión no válida.');
+        return;
+    }
 
     makeAPIRequest(
         url,
@@ -1079,7 +1192,7 @@ function commissionSubmit(idSession) {
     );
 }
 
-function addCommission(idSession, sessionDate) {
+function addCommission(idSession, sessionStartTime, sessionEndTime) {
     var template = twig({
         href: 'templates/commission-form.twig',
         async: false,
@@ -1093,7 +1206,8 @@ function addCommission(idSession, sessionDate) {
                 method = CONFIG.endpoints.commissions.create.method,
                 output = tpl.render({
                     idSession: idSession,
-                    sessionDate: sessionDate,
+                    sessionStartTimeReal: sessionStartTime,
+                    sessionEndTime: sessionEndTime,
                     session: null,
                     title: 'Agregar comisión',
                     action: url,
@@ -1103,7 +1217,7 @@ function addCommission(idSession, sessionDate) {
             $('#main').html('');
             $('#forms').html(output);
             $('#idSession').val(idSession);
-            $('#hour').val(suggestedDate(sessionDate));
+            $('#hour').val(suggestedDate(sessionStartTime));
             $('#commission').focus();
         }
     });
@@ -1116,7 +1230,10 @@ function updateBuyin(idSession, idBuyin) {
         }),
         method = CONFIG.endpoints.buyins.fetch.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -1155,7 +1272,10 @@ function buyinSubmit(idSession) {
         method = $('#buyins-form').attr("method"),
         form = new FormData(document.getElementById('buyins-form')),
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     makeAPIRequest(
@@ -1287,7 +1407,10 @@ function addBuyin(button, idSession, sessionDate) {
                             });
                         },
                         function (err) {
-                            debug(err)
+                            debug('Fetch Error :-S'); debug(err);
+                            if (err.statusText) {
+                                alert(err.statusText);
+                            }
                         },
                     );
                 };
@@ -1303,7 +1426,10 @@ function updateExpenditure(idSession, idExpenditure) {
         }),
         method = CONFIG.endpoints.expenses.fetch.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -1340,7 +1466,10 @@ function expenditureSubmit(idSession) {
         method = $('#expenses-form').attr("method"),
         form = new FormData(document.getElementById('expenses-form')),
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     makeAPIRequest(
@@ -1405,7 +1534,10 @@ function updateDealerTip(idSession, idDealerTip) {
         }),
         method = CONFIG.endpoints.dealerTips.fetchDealerTip.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -1445,7 +1577,10 @@ function updateServiceTip(idSession, idServiceTip) {
         }),
         method = CONFIG.endpoints.serviceTips.fetchServiceTip.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -1484,7 +1619,10 @@ function serviceTipSubmitForAdd(idSession, form, successCallback, errorCallback)
         }),
         method = CONFIG.endpoints.serviceTips.create.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     makeAPIRequest(
@@ -1519,7 +1657,10 @@ function dealerTipSubmitForAdd(idSession) {
         method = $('#tips-form').attr("method"),
         form = new FormData(document.getElementById('tips-form')),
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     makeAPIRequest(
@@ -1589,7 +1730,10 @@ function dealerTipSubmit(idSession) {
         method = $('#dealerTips-form').attr("method"),
         form = new FormData(document.getElementById('dealerTips-form')),
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     makeAPIRequest(
@@ -1627,7 +1771,10 @@ function serviceTipSubmit(idSession) {
         method = $('#serviceTips-form').attr("method"),
         form = new FormData(document.getElementById('serviceTips-form')),
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     makeAPIRequest(
@@ -1740,7 +1887,10 @@ function updateUserSession(button, idSession, idUserSession) {
 
         },
         function (err) {
-            debug('Fetch Error :-S', err);
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         }
     );
 }
@@ -1786,7 +1936,10 @@ function closeUserSession(button, idSession, idUserSession) {
             // $('#usersession-form').addClass('active-player');
         },
         function (err) {
-            debug('Fetch Error :-S', err);
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         }
     );
 }
@@ -1796,7 +1949,10 @@ function userSessionSubmit(idSession) {
         method = $('#usersession-form').attr("method"),
         form = new FormData(document.getElementById('usersession-form')),
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     makeAPIRequest(
@@ -1876,7 +2032,10 @@ function addUserSession(idSession) {
                         });
                     },
                     function (err) {
-                        debug(err)
+                        debug('Fetch Error :-S'); debug(err);
+                        if (err.statusText) {
+                            alert(err.statusText);
+                        }
                     },
                 );
             };
@@ -1891,7 +2050,10 @@ function updateUser(idUser) {
         }),
         method = CONFIG.endpoints.users.fetch.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     loadView(
@@ -1936,7 +2098,10 @@ function userSubmit() {
 
         form = new FormData(document.getElementById('users-form')),
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     makeAPIRequest(
@@ -2001,7 +2166,10 @@ function playSession(idSession) {
         }),
         method = CONFIG.endpoints.sessions.playSession.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     makeAPIRequest(
@@ -2024,7 +2192,10 @@ function stopSession(idSession) {
         }),
         method = CONFIG.endpoints.sessions.stopSession.method,
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     makeAPIRequest(
@@ -2086,7 +2257,10 @@ function updateSession(idSession) {
             var url = parseRoute(CONFIG.endpoints.rakebackAlgorithms.fetchAll.path, {}),
                 method = CONFIG.endpoints.rakebackAlgorithms.fetchAll.method,
                 errorHandler = function (err) {
-                    debug('Fetch Error :-S', err)
+                    debug('Fetch Error :-S'); debug(err);
+                    if (err.statusText) {
+                        alert(err.statusText);
+                    }
                 },
 
                 loadAlgorithms = function () {
@@ -2124,7 +2298,10 @@ function sessionSubmit() {
         method = $('#sessions-form').attr("method"),
         form = new FormData(document.getElementById('sessions-form')),
         errorHandler = function (err) {
-            debug('Fetch Error :-S', err)
+            debug('Fetch Error :-S'); debug(err);
+            if (err.statusText) {
+                alert(err.statusText);
+            }
         };
 
     makeAPIRequest(
@@ -2183,7 +2360,10 @@ function addSession() {
             var url_alg = parseRoute(CONFIG.endpoints.rakebackAlgorithms.fetchAll.path, {}),
                 method_alg = CONFIG.endpoints.rakebackAlgorithms.fetchAll.method,
                 errorHandler = function (err) {
-                    debug('Fetch Error :-S', err)
+                    debug('Fetch Error :-S'); debug(err);
+                    if (err.statusText) {
+                        alert(err.statusText);
+                    }
                 },
                 loadAlgorithms = function () {
                     makeAPIRequest(
@@ -2531,83 +2711,6 @@ function displayByDayAverage(idChart, div, label, key) {
     });
 }
 
-/*
-function displayTotalCashinByMonth(data) {
-    debug(data);
-    var list = generateDataOfPeriod(data.interval.from, data.interval.end);
-
-    // loadDataOfPeriod
-    data.dataTotalCashin.forEach(function (item) {
-        debug(item.total);
-        list[moment(item.startTimeReal.date).format('YYYY')][moment(item.startTimeReal.date).format('MMMM')] += parseFloat(item.total);
-    });
-    debug('list'); debug(list);
-
-    // render graphic
-    $('#myChartTotalCashin').remove();
-    $('#filtCashByMonth').prop('disabled', true).addClass('button-disabled');
-    $('#filtCashBySession').prop('disabled', false).removeClass('button-disabled');
-
-    $('#totalCashinDiv').append("<canvas id='myChartTotalCashin'></canvas>");
-    var ctx = document.getElementById('myChartTotalCashin'),
-        totals = [],
-        months = [];
-
-    for (var year in list) {
-        if (list.hasOwnProperty(year)) {
-            debug(year);
-            for (var month in list[year]) {
-                if (list[year].hasOwnProperty(month)) {
-                    debug(month);
-                    totals.push(list[year][month]);
-                    months.push(month+ '-' + year);
-                }
-            }
-        }
-    }
-
-    debug(totals); debug(months);
-
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: months,
-            datasets: [{
-                label: '# TotalCashinByMonth',
-                data: totals,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 3
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
-}
-
- */
-
 var statisticsResponse = {};
 
 function loadCommissionsData(url, method, form, successHandler, errorHandler) {
@@ -2770,6 +2873,18 @@ function statisticsSubmit() {
         obj[item.name] = item.value;
         return obj;
     }, {});
+
+    var from = moment(interval.from), to = moment(interval.to);
+
+    if (from > to) {
+        alert('Intervalo no válido.');
+        return;
+    }
+
+    if (to.diff(from, 'days') >= ONE_YEAR) {
+        alert('El intervalo no debe ser mayor a un año.');
+        return;
+    }
 
     statisticsResponse.interval = interval;
 
