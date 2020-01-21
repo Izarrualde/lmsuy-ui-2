@@ -253,12 +253,51 @@ const CONFIG = {
     }
 };
 
+const STATISTIC_SELECTOR = {
+    commissions: {
+        idChart: 'myChartCommissions',
+        div: 'commissionsDiv',
+        label: 'commissions',
+        key: 'dataCommissions',
+        thisButton: 'Comm',
+        idButton: 'filtComm:filter'
+    } ,
+    dealerTips: {
+        idChart: 'myChartDealerTips',
+        div: 'dealerTipsDiv',
+        label: 'dealerTips',
+        key: 'dataDealerTips',
+        thisButton: 'Deal',
+        idButton: 'filtDeal:filter'
+    },
+    serviceTips: {
+        idChart: 'myChartServiceTips',
+        div: 'serviceTipsDiv',
+        label: 'serviceTips',
+        key: 'dataServiceTips',
+        thisButton: 'Serv',
+        idButton: 'filtServ:filter'
+    },
+    expenses: {
+        idChart: 'myChartExpenses',
+        div: 'expensesDiv',
+        label: 'expenses',
+        key: 'dataExpenses',
+        thisButton: 'Exp',
+        idButton: 'filtExp:filter'
+    }
+};
+
 function parseRoute(path, args) {
     for (var rep in args) {
         path = path.replace(":" + rep, args[rep]);
     }
 
     return CONFIG.base_url + path;
+}
+
+function parseButtonId(idGeneric, filter) {
+    return  idGeneric.replace(":filter", filter);
 }
 
 function debug(data) {
@@ -2220,30 +2259,51 @@ function generateDataOfPeriod(start, end) {
     return years;
 }
 
-function displayCommissionsBySession(data) {
-    debug(data);
-    $('#myChartCommissions').remove();
-    $('#filtCommBySession').prop('disabled', true).addClass('button-disabled');
-    $('#filtCommByMonth').prop('disabled', false).removeClass('button-disabled');
+function generateDaysOfWeeks() {
+    var days = {};
+    moment.weekdays().forEach(function(day) {
+        days[day] = {
+            count: 0,
+            total: 0
+        };
+    });
 
-    $('#commissionsDiv').append("<canvas id='myChartCommissions'> </canvas>");
-    var ctx = document.getElementById('myChartCommissions'),
+    return days;
+}
+
+function configureButtons(buttonInactive, thisButton) {
+    $('#filt'+thisButton+'BySession').prop('disabled', false).removeClass('button-disabled');
+    $('#filt'+thisButton+'ByMonth').prop('disabled', false).removeClass('button-disabled');
+    $('#filt'+thisButton+'ByDay').prop('disabled', false).removeClass('button-disabled');
+    $('#filt'+thisButton+'ByDayAverage').prop('disabled', false).removeClass('button-disabled');
+
+    $('#' + buttonInactive).prop('disabled', true).addClass('button-disabled');
+}
+
+function filterAndRender(entity, filter) {
+    window['display'+ filter](STATISTIC_SELECTOR[entity].idChart, STATISTIC_SELECTOR[entity].div, STATISTIC_SELECTOR[entity].label, STATISTIC_SELECTOR[entity].key);
+    configureButtons(parseButtonId(STATISTIC_SELECTOR[entity].idButton, filter), STATISTIC_SELECTOR[entity].thisButton);
+}
+
+function displayBySession(idChart, div, label, key) {
+    $('#' + idChart).remove();
+    $('#' + div).append("<canvas id='"+idChart+"'> </canvas>");
+
+    var ctx = document.getElementById(idChart),
         totals = [],
         dates = [];
-    //debug(data['dataCommissions']);
-    data.dataCommissions.forEach(function (item) {
+
+    statisticsResponse[key].forEach(function (item) {
         totals.push(item.total);
         dates.push(item.startTimeReal.date.substr(0, 10).replace(/-/g, '/'));
     });
-
-    //debug(totals); debug(dates);
 
     var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: dates,
             datasets: [{
-                label: '# commissions',
+                label: '#' + label,
                 data: totals,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -2276,242 +2336,18 @@ function displayCommissionsBySession(data) {
     });
 }
 
-function displayDealerTipsBySession(data) {
-    $('#myChartDealerTips').remove();
-    $('#filtDealBySession').prop('disabled', true).addClass('button-disabled');
-    $('#filtDealByMonth').prop('disabled', false).removeClass('button-disabled');
-    $('#dealerTipsDiv').append("<canvas id='myChartDealerTips'> </canvas>");
-    var ctx = document.getElementById('myChartDealerTips'),
-        totals = [],
-        dates = [];
-    debug(data.data);
-    data.dataDealerTips.forEach(function (item) {
-        totals.push(item.total);
-        dates.push(item.startTimeReal.date.substr(0, 10).replace(/-/g, '/'));
-    });
-
-    // debug(totals); debug(ids);
-
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dates,
-            datasets: [{
-                label: '# DealerTips',
-                data: totals,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 3
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
-}
-
-function displayServiceTipsBySession(data) {
-    $('#myChartServiceTips').remove();
-    $('#filtServBySession').prop('disabled', true).addClass('button-disabled');
-    $('#filtServByMonth').prop('disabled', false).removeClass('button-disabled');
-    $('#serviceTipsDiv').append("<canvas id='myChartServiceTips'> </canvas>");
-    var ctx = document.getElementById('myChartServiceTips'),
-        totals = [],
-        dates = [];
-    debug(data.data);
-    data.dataServiceTips.forEach(function (item) {
-        totals.push(item.total);
-        dates.push(item.startTimeReal.date.substr(0, 10).replace(/-/g, '/'));
-    });
-
-    // debug(totals); debug(dates);
-
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dates,
-            datasets: [{
-                label: '# ServiceTips',
-                data: totals,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 3
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
-}
-
-function displayExpensesBySession(data) {
-    $('#myChartExpenses').remove();
-    $('#filtExpBySession').prop('disabled', true).addClass('button-disabled');
-    $('#filtExpByMonth').prop('disabled', false).removeClass('button-disabled');
-    $('#expensesDiv').append("<canvas id='myChartExpenses'> </canvas></canvas>");
-    var ctx = document.getElementById('myChartExpenses'),
-        totals = [],
-        dates = [];
-    debug(data.data);
-    data.dataExpenses.forEach(function (item) {
-        totals.push(item.total);
-        dates.push(item.startTimeReal.date.substr(0, 10).replace(/-/g, '/'));
-    });
-
-    // debug(totals); debug(dates);
-
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dates,
-            datasets: [{
-                label: '# Expenses',
-                data: totals,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 3
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
-}
-
-function displayTotalCashinBySession(data) {
-    $('#myChartTotalCashin').remove();
-    $('#filtCashBySession').prop('disabled', true).addClass('button-disabled');
-    $('#filtCashByMonth').prop('disabled', false).removeClass('button-disabled');
-    $('#totalCashinDiv').append("<canvas id='myChartTotalCashin'> </canvas></canvas>");
-
-    var ctx = document.getElementById('myChartTotalCashin'),
-        totals = [],
-        dates = [];
-    debug(data.data);
-    data.dataTotalCashin.forEach(function (item) {
-        totals.push(item.total);
-        dates.push(item.startTimeReal.date.substr(0, 10).replace(/-/g, '/'));
-    });
-
-    // debug(totals); debug(dates); return;
-
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dates,
-            datasets: [{
-                label: '# Total cashin',
-                data: totals,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 3
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
-}
-
-function displayCommissionsByMonth(data) {
-    var list = generateDataOfPeriod(data.interval.from, data.interval.end);
+function displayByMonth(idChart, div, label, key) {
+    var list = generateDataOfPeriod(statisticsResponse.interval.from, statisticsResponse.interval.end);
 
     // loadDataOfPeriod
-    data.dataCommissions.forEach(function (item) {
+    statisticsResponse[key].forEach(function (item) {
         debug(item.total);
         list[moment(item.startTimeReal.date).format('YYYY')][moment(item.startTimeReal.date).format('MMMM')] += parseFloat(item.total);
     });
-    debug('list'); debug(list);
 
-    // render graphic
-    $('#myChartCommissions').remove();
-    $('#filtCommByMonth').prop('disabled', true).addClass('button-disabled');
-    $('#filtCommBySession').prop('disabled', false).removeClass('button-disabled');
-
-    statisticsResponse = data;
-
-    $('#commissionsDiv').append("<canvas id='myChartCommissions'></canvas>");
-    var ctx = document.getElementById('myChartCommissions'),
+    $('#' + idChart).remove();
+    $('#' + div).append("<canvas id='"+idChart+"'></canvas>");
+    var ctx = document.getElementById(idChart),
         totals = [],
         months = [];
 
@@ -2520,7 +2356,6 @@ function displayCommissionsByMonth(data) {
             debug(year);
             for (var month in list[year]) {
                 if (list[year].hasOwnProperty(month)) {
-                    debug(month);
                     totals.push(list[year][month]);
                     months.push(month+ '-' + year);
                 }
@@ -2528,14 +2363,12 @@ function displayCommissionsByMonth(data) {
         }
     }
 
-    debug(totals); debug(months);
-
     var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: months,
             datasets: [{
-                label: '# commissionsByMonth',
+                label: '#' + label,
                 data: totals,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -2568,50 +2401,35 @@ function displayCommissionsByMonth(data) {
     });
 }
 
-function displayDealerTipsByMonth(data) {
-    debug(data);
-    var list = generateDataOfPeriod(data.interval.from, data.interval.end);
+function displayByDay(idChart, div, label, key) {
+    var days = generateDaysOfWeeks();
 
     // loadDataOfPeriod
-    data.dataDealerTips.forEach(function (item) {
-        debug(item.total);
-        list[moment(item.startTimeReal.date).format('YYYY')][moment(item.startTimeReal.date).format('MMMM')] += parseFloat(item.total);
+    statisticsResponse[key].forEach(function (item) {
+        days[moment(item.startTimeReal.date).format('dddd')]['count']++; //+= parseFloat(item.total);
+        days[moment(item.startTimeReal.date).format('dddd')]['total'] += parseFloat(item.total);
     });
-    debug('list'); debug(list);
 
-    // render graphic
-    $('#myChartDealerTips').remove();
-    $('#filtDealByMonth').prop('disabled', true).addClass('button-disabled');
-    $('#filtDealBySession').prop('disabled', false).removeClass('button-disabled');
+    $('#' + idChart).remove();
+    $('#' + div).append("<canvas id='"+idChart+"'></canvas>");
 
-    statisticsResponse = data;
-
-    $('#dealerTipsDiv').append("<canvas id='myChartDealerTips'></canvas>");
-    var ctx = document.getElementById('myChartDealerTips'),
+    var ctx = document.getElementById(idChart),
         totals = [],
-        months = [];
+        daysOfWeek = [];
 
-    for (var year in list) {
-        if (list.hasOwnProperty(year)) {
-            debug(year);
-            for (var month in list[year]) {
-                if (list[year].hasOwnProperty(month)) {
-                    debug(month);
-                    totals.push(list[year][month]);
-                    months.push(month+ '-' + year);
-                }
-            }
+    for (var day in days) {
+        if (days.hasOwnProperty(day)) {
+            totals.push(days[day]['total']);
+            daysOfWeek.push(day + '(' + days[day]['count'] + ')');
         }
     }
-
-    debug(totals); debug(months);
 
     var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: months,
+            labels: daysOfWeek,
             datasets: [{
-                label: '# dealerTipsByMonth',
+                label: '#' + label,
                 data: totals,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -2644,51 +2462,36 @@ function displayDealerTipsByMonth(data) {
     });
 }
 
-function displayServiceTipsByMonth(data) {
-    debug(data);
-    var list = generateDataOfPeriod(data.interval.from, data.interval.end);
+function displayByDayAverage(idChart, div, label, key) {
+    var days = generateDaysOfWeeks();
 
     // loadDataOfPeriod
-    data.dataServiceTips.forEach(function (item) {
-        debug(item.total);
-        list[moment(item.startTimeReal.date).format('YYYY')][moment(item.startTimeReal.date).format('MMMM')] += parseFloat(item.total);
+    statisticsResponse[key].forEach(function (item) {
+        days[moment(item.startTimeReal.date).format('dddd')]['count']++; //+= parseFloat(item.total);
+        days[moment(item.startTimeReal.date).format('dddd')]['total'] += parseFloat(item.total);
     });
-    debug('list'); debug(list);
 
-    // render graphic
-    $('#myChartServiceTips').remove();
-    $('#filtServByMonth').prop('disabled', true).addClass('button-disabled');
-    $('#filtServBySession').prop('disabled', false).removeClass('button-disabled');
+    $('#' + idChart).remove();
+    $('#' + div).append("<canvas id='"+idChart+"'></canvas>");
 
-    statisticsResponse = data;
+    var ctx = document.getElementById(idChart),
+        average = [],
+        daysOfWeek = [];
 
-    $('#serviceTipsDiv').append("<canvas id='myChartServiceTips'></canvas>");
-    var ctx = document.getElementById('myChartServiceTips'),
-        totals = [],
-        months = [];
-
-    for (var year in list) {
-        if (list.hasOwnProperty(year)) {
-            debug(year);
-            for (var month in list[year]) {
-                if (list[year].hasOwnProperty(month)) {
-                    debug(month);
-                    totals.push(list[year][month]);
-                    months.push(month+ '-' + year);
-                }
-            }
+    for (var day in days) {
+        if (days.hasOwnProperty(day)) {
+            average.push(days[day]['count'] > 0 ? days[day]['total']/days[day]['count']: 0);
+            daysOfWeek.push(day);
         }
     }
-
-    debug(totals); debug(months);
 
     var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: months,
+            labels: daysOfWeek,
             datasets: [{
-                label: '# serviceTipsByMonth',
-                data: totals,
+                label: '#' + label,
+                data: average,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
@@ -2720,82 +2523,7 @@ function displayServiceTipsByMonth(data) {
     });
 }
 
-function displayExpensesByMonth(data) {
-    debug(data);
-    var list = generateDataOfPeriod(data.interval.from, data.interval.end);
-
-    // loadDataOfPeriod
-    data.dataExpenses.forEach(function (item) {
-        debug(item.total);
-        list[moment(item.startTimeReal.date).format('YYYY')][moment(item.startTimeReal.date).format('MMMM')] += parseFloat(item.total);
-    });
-    debug('list'); debug(list);
-
-    // render graphic
-    $('#myChartExpenses').remove();
-    $('#filtExpByMonth').prop('disabled', true).addClass('button-disabled');
-    $('#filtExpBySession').prop('disabled', false).removeClass('button-disabled');
-
-    statisticsResponse = data;
-
-    $('#expensesDiv').append("<canvas id='myChartExpenses'></canvas>");
-    var ctx = document.getElementById('myChartExpenses'),
-        totals = [],
-        months = [];
-
-    for (var year in list) {
-        if (list.hasOwnProperty(year)) {
-            debug(year);
-            for (var month in list[year]) {
-                if (list[year].hasOwnProperty(month)) {
-                    debug(month);
-                    totals.push(list[year][month]);
-                    months.push(month+ '-' + year);
-                }
-            }
-        }
-    }
-
-    debug(totals); debug(months);
-
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: months,
-            datasets: [{
-                label: '# ExpensesByMonth',
-                data: totals,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 3
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
-}
-
+/*
 function displayTotalCashinByMonth(data) {
     debug(data);
     var list = generateDataOfPeriod(data.interval.from, data.interval.end);
@@ -2811,8 +2539,6 @@ function displayTotalCashinByMonth(data) {
     $('#myChartTotalCashin').remove();
     $('#filtCashByMonth').prop('disabled', true).addClass('button-disabled');
     $('#filtCashBySession').prop('disabled', false).removeClass('button-disabled');
-
-    statisticsResponse = data;
 
     $('#totalCashinDiv').append("<canvas id='myChartTotalCashin'></canvas>");
     var ctx = document.getElementById('myChartTotalCashin'),
@@ -2871,6 +2597,8 @@ function displayTotalCashinByMonth(data) {
         }
     });
 }
+
+ */
 
 var statisticsResponse = {};
 
@@ -3004,7 +2732,6 @@ function loadTotalCashinData(url, method, form, successHandler, errorHandler) {
     );
 }
 
-
 function statisticsSubmit() {
       var form = new FormData(document.getElementById('statistics-form')),
         errorHandler = function (err) {
@@ -3037,52 +2764,64 @@ function statisticsSubmit() {
     }, {});
 
     statisticsResponse.interval = interval;
-    
+
     $('#forms').html('');
     $('#main').html('');
 
     loadCommissionsData(urlCommissions, methodCommissions, form, function() {
         $('#statistics').append(
             "<div class='widget' id='commissionsDiv' </div> " +
-            "<button type=\"button\" class=\"btn btn-primary\" id='filtCommBySession' onclick='displayCommissionsBySession(statisticsResponse)'>bySession</button>" +
-            " <button type=\"button\" class=\"btn btn-success\" id='filtCommByMonth' onclick='displayCommissionsByMonth(statisticsResponse)'>byMonth</button>"
+            "<button type=\"button\" class=\"btn btn-primary\" id='filtCommBySession' onclick='filterAndRender(\"commissions\", \"BySession\")'>bySession</button>" +
+            "<button type=\"button\" class=\"btn btn-success\" id='filtCommByMonth' onclick='filterAndRender(\"commissions\", \"ByMonth\")'>byMonth</button>" +
+            "<button type=\"button\" class=\"btn btn-warning\" id='filtCommByDay' onclick='filterAndRender(\"commissions\", \"ByDay\")'>byDay</button>" +
+            "<button type=\"button\" class=\"btn btn-danger\" id='filtCommByDayAverage' onclick='filterAndRender(\"commissions\", \"ByDayAverage\")'>byDayAverage</button>"
         );
-        displayCommissionsBySession(statisticsResponse);
+        filterAndRender('commissions', 'BySession');
     }, errorHandler);
 
     loadDealerTipsData(urlDealerTips, methodDealerTips, form, function () {
         $('#statistics').append(
             "<div class='widget' id='dealerTipsDiv' </div> " +
-            "<button type=\"button\" class=\"btn btn-primary\" id='filtDealBySession' onclick='displayDealerTipsBySession(statisticsResponse)'>bySession</button>" +
-            " <button type=\"button\" class=\"btn btn-success\" id='filtDealByMonth' onclick='displayDealerTipsByMonth(statisticsResponse)'>byMonth</button>"
+            "<button type=\"button\" class=\"btn btn-primary\" id='filtDealBySession' onclick='filterAndRender(\"dealerTips\", \"BySession\")'>bySession</button>" +
+            "<button type=\"button\" class=\"btn btn-success\" id='filtDealByMonth' onclick='filterAndRender(\"dealerTips\", \"ByMonth\")'>byMonth</button>" +
+            "<button type=\"button\" class=\"btn btn-warning\" id='filtDealByDay' onclick='filterAndRender(\"dealerTips\", \"ByDay\")'>byDay</button>" +
+            "<button type=\"button\" class=\"btn btn-danger\" id='filtDealByDayAverage' onclick='filterAndRender(\"dealerTips\", \"ByDayAverage\")'>byDayAverage</button>"
         );
-        displayDealerTipsBySession(statisticsResponse);
+        filterAndRender('dealerTips', 'BySession');
     }, errorHandler);
 
     loadServiceTipsData(urlServiceTips, methodServiceTips, form, function () {
         $('#statistics').append(
             "<div class='widget' id='serviceTipsDiv' </div> " +
-            "<button type=\"button\" class=\"btn btn-primary\" id='filtServBySession' onclick='displayServiceTipsBySession(statisticsResponse)'>bySession</button>" +
-            " <button type=\"button\" class=\"btn btn-success\" id='filtServByMonth' onclick='displayServiceTipsByMonth(statisticsResponse)'>byMonth</button>"
+            "<button type=\"button\" class=\"btn btn-primary\" id='filtServBySession' onclick='filterAndRender(\"serviceTips\", \"BySession\")'>bySession</button>" +
+            "<button type=\"button\" class=\"btn btn-success\" id='filtServByMonth' onclick='filterAndRender(\"serviceTips\", \"ByMonth\")'>byMonth</button>" +
+            "<button type=\"button\" class=\"btn btn-warning\" id='filtServByDay' onclick='filterAndRender(\"serviceTips\", \"ByDay\")'>byDay</button>" +
+            "<button type=\"button\" class=\"btn btn-danger\" id='filtServByDayAverage' onclick='filterAndRender(\"serviceTips\", \"ByDayAverage\")'>byDayAverage</button>"
         );
-        displayServiceTipsBySession(statisticsResponse);
+        filterAndRender('serviceTips', 'BySession');
     }, errorHandler);
 
     loadExpensesData(urlExpenses, methodExpenses, form, function () {
         $('#statistics').append(
             "<div class='widget' id='expensesDiv' </div> " +
-            "<button type=\"button\" class=\"btn btn-primary\" id='filtExpBySession' onclick='displayExpensesBySession(statisticsResponse)'>bySession</button>" +
-            " <button type=\"button\" class=\"btn btn-success\" id='filtExpByMonth' onclick='displayExpensesByMonth(statisticsResponse)'>byMonth</button>"
+            "<button type=\"button\" class=\"btn btn-primary\" id='filtExpBySession' onclick='filterAndRender(\"expenses\", \"BySession\")'>bySession</button>" +
+            "<button type=\"button\" class=\"btn btn-success\" id='filtExpByMonth' onclick='filterAndRender(\"expenses\", \"ByMonth\")'>byMonth</button>" +
+            "<button type=\"button\" class=\"btn btn-warning\" id='filtExpByDay' onclick='filterAndRender(\"expenses\", \"ByDay\")'>byDay</button>" +
+            "<button type=\"button\" class=\"btn btn-danger\" id='filtExpByDayAverage' onclick='filterAndRender(\"expenses\", \"ByDayAverage\")'>byDayAverage</button>"
         );
-        displayExpensesBySession(statisticsResponse);
+        filterAndRender('expenses', 'BySession');
     }, errorHandler);
 
+
+    /*
     loadTotalCashinData(urlTotalCashin, methodTotalCashin, form, function () {
         $('#statistics').append(
             "<div class='widget' id='totalCashinDiv' </div> " +
             "<button type=\"button\" class=\"btn btn-primary\" id='filtCashBySession' onclick='displayTotalCashinBySession(statisticsResponse)'>bySession</button>" +
-            " <button type=\"button\" class=\"btn btn-success\" id='filtCashByMonth' onclick='displayTotalCashinByMonth(statisticsResponse)'>byMonth</button>"
+            "<button type=\"button\" class=\"btn btn-success\" id='filtCashByMonth' onclick='displayTotalCashinByMonth(statisticsResponse)'>byMonth</button>"
         );
         displayTotalCashinBySession(statisticsResponse);
     }, errorHandler);
+
+     */
 }
