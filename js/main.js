@@ -285,6 +285,14 @@ const STATISTIC_SELECTOR = {
         key: 'dataExpenses',
         thisButton: 'Exp',
         idButton: 'filtExp:filter'
+    },
+    totalCashin: {
+        idChart: 'myChartTotalCashin',
+        div: 'totalCashinDiv',
+        label: 'totalCashin',
+        key: 'dataTotalCashin',
+        thisButton: 'Cash',
+        idButton: 'filtCash:filter'
     }
 };
 
@@ -2813,15 +2821,15 @@ function statisticsSubmit() {
     }, errorHandler);
 
 
-    /*
     loadTotalCashinData(urlTotalCashin, methodTotalCashin, form, function () {
         $('#statistics').append(
             "<div class='widget' id='totalCashinDiv' </div> " +
-            "<button type=\"button\" class=\"btn btn-primary\" id='filtCashBySession' onclick='displayTotalCashinBySession(statisticsResponse)'>bySession</button>" +
-            "<button type=\"button\" class=\"btn btn-success\" id='filtCashByMonth' onclick='displayTotalCashinByMonth(statisticsResponse)'>byMonth</button>"
+            "<button type=\"button\" class=\"btn btn-primary\" id='filtCashBySession' onclick='filterAndRender(\"totalCashin\", \"BySession\")'>bySession</button>" +
+            "<button type=\"button\" class=\"btn btn-success\" id='filtCashByMonth' onclick='filterAndRender(\"totalCashin\", \"ByMonth\")'>byMonth</button>" +
+            "<button type=\"button\" class=\"btn btn-warning\" id='filtCashByDay' onclick='filterAndRender(\"totalCashin\", \"ByDay\")'>byDay</button>" +
+            "<button type=\"button\" class=\"btn btn-danger\" id='filtCashByDayAverage' onclick='filterAndRender(\"totalCashin\", \"ByDayAverage\")'>byDayAverage</button>"
         );
-        displayTotalCashinBySession(statisticsResponse);
+        filterAndRender('totalCashin', 'BySession');
     }, errorHandler);
 
-     */
 }
